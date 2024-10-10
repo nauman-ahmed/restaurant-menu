@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/global/navbar";
-import MainSection from "../components/home/mainBox";
-import Services from "../components/home/services";
 import Menu from "../components/home/menu";
-import Team from "../components/home/team";
-import Contact from "../components/home/contact";
-import Footer from "../components/global/footer";
 import { useNavigate } from "react-router-dom";
 
 

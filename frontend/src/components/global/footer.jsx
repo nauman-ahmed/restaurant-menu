@@ -13,7 +13,7 @@ export default function Footer() {
               {/* <!-- Start Col --> */}
               <div className="col-lg-3 col-md-6 col-sm-6 col-xs-6 col-12">
                 <div className="footer-logo">
-                  <img style={{ paddingTop : '0px'}} width={180} height={200} src="img/logo.png" alt="" />
+                  <img style={{ paddingTop : '0px'}} width={150} height={150} src="img/logo.png" alt="" />
                 </div>
               </div>
               {/* <!-- End Col --> */}

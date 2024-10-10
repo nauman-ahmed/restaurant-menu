@@ -17,7 +17,7 @@ Domain Path:      /languages/
    :root {
     --background-color: #ffffff; /* Light mode */
     --text-color: rgb(29, 29, 29);
-    --light-color: rgb(255, 240, 212);
+    --light-color: #fcebe6;
 
   }
   
@@ -64,7 +64,7 @@ ul {
   padding: 0;
 }
 .bg-orange {
-  background-color: orange;
+  background-color: rgba(252,114,76,255);
 }
 
 ul li {
@@ -128,17 +128,18 @@ ul li {
 }
 .searchInput {
   padding: 5px;
-  border: 1px solid orange;
+  border: 1px solid rgba(252,114,76,255);
   font-size: 16px;
   background-color: var(--background-color);
   color: var(--text-color);
+  width: 300px;
 }
 .searchInput:focus {
-  /* outline: none; */
-  border: 2px solid orange !important;
+  outline: none;
+  border: 2px solid rgba(252,114,76,255) !important;
 }
 .dayWeek-selected {
-  background-color: orange;
+  background-color: #fc724c;
   color: white;
   font-weight: 500;
 }
@@ -274,7 +275,7 @@ ul li {
  left: 0;
 }
 .btn-singin {
-  background: orange;
+  background: #fc724c;
   color: #fff;
   padding: 10px 23px;
   margin-left: 30px;

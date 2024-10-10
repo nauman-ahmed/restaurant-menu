@@ -6,7 +6,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import { Col, Row } from "reactstrap";
 import { CiDark } from "react-icons/ci";
 import { CiLight } from "react-icons/ci";
-
+import { HiMenuAlt1 } from "react-icons/hi";
 
 export default function Navbar({ page }) {
   const [tab, setTab] = useState(1)
@@ -51,7 +51,7 @@ export default function Navbar({ page }) {
       <nav style={{ backgroundColor: 'black' }} className="navbar navbar-expand-md bg-inverse fixed-top scrolling-navbar">
         <div style={{ height: '75px' }} className="container">
           <a className="navbar-brand">
-            <img width={90} height={90} src="img/logo.png" alt="" />
+            <img width={65} height={65} src="img/logo.png" alt="" />
           </a>
           <button
             className="navbar-toggler"
@@ -108,13 +108,14 @@ export default function Navbar({ page }) {
 
       <nav style={{ backgroundColor: 'black' }} className=" fixed-top navbar-mobile scrolling-navbar">
         <div style={{ height: '75px' }} className="container d-flex justify-content-between align-items-center">
-          <div>
+          <div className='d-flex align-items-center'>
 
             <button onClick={handleSidebarToggle}
               className="navbar-toggler"
 
             >
-              <img src={"icons/menu.svg"} />
+             <HiMenuAlt1 className='text-white' style={{ fontSize : '30px'}}  />
+
             </button>
             <a >
               <img width={60} height={60} src="img/logo.png" alt="" />
@@ -131,7 +132,7 @@ export default function Navbar({ page }) {
           <div className="nav-item d-flex flex-row gap-2">
             {page ?
               <a style={{
-                background: 'orange',
+                background: '#fc724c',
                 color: 'white',
                 padding: '8px 10px',
                 marginLeft: '30px',
@@ -145,7 +146,7 @@ export default function Navbar({ page }) {
               </a>
               :
               <a style={{
-                background: 'orange',
+                background: '#fc724c',
                 color: 'white',
                 padding: '8px 10px',
                 marginLeft: '30px',
