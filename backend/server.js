@@ -42,7 +42,7 @@ app.listen(PORT, () => {
 });
 
 mongoose
-  .connect("mongodb://localhost:27017/restaurant")
+  .connect( process.env.DEBUG == "true" ? MONGO_URI_LOCAL : MONGO_URI_PROD)
   .then(() => {
     app.listen(3001);
   })
