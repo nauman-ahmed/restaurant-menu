@@ -9,7 +9,7 @@ export default function Admin() {
     const [tab, setTab] = useState(1)
     useEffect(() => {
         const credentials = localStorage.getItem('credentials') && JSON.parse(localStorage.getItem('credentials'))
-        if (!(credentials?.username === 'admin' && credentials?.password === 'abc123ABC')) {
+        if (credentials?.role !== 'Admin') {
             navigate('/')
 
         } 

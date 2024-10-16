@@ -5,7 +5,6 @@ import Student from './pages/student';
 import Admin from './pages/admin';
 import 'animate.css'
 
-
 function App() {
   
 

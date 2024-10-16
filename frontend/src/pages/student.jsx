@@ -9,7 +9,7 @@ export default function Student() {
     const [tab , setTab] = useState(1)
     useEffect(() => {
         const credentials = localStorage.getItem('credentials') && JSON.parse(localStorage.getItem('credentials'))
-        if (!(credentials?.username === 'student' && credentials?.password === 'abc123ABC')) {
+        if (credentials?.role !== 'Student') {
             navigate('/')
 
         } 

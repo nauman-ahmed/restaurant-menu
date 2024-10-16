@@ -1,0 +1,1 @@
+export const getFoodNames = (favorites) => favorites.map(favorite => favorite.name)

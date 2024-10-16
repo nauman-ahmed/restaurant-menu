@@ -1,11 +1,21 @@
 const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const cors = require('cors')
+const cors = require('cors');
+const dotenv = require("dotenv");
 
+const bodyParser = require('body-parser');
+const { graphqlHTTP } = require('express-graphql');
+const mongoose = require('mongoose');
+
+const graphQlSchema = require('./graphql/schema/index');
+const graphQlResolvers = require('./graphql/resolvers/index');
+
+dotenv.config();
 const app = express();
 const PORT = 5003;
 app.use(cors())
+app.use(bodyParser.json());
 
 app.get('/scrape', async (req, res) => {
   try {
@@ -66,6 +76,24 @@ app.get('/scrape', async (req, res) => {
 
 });
 
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema: graphQlSchema,
+    rootValue: graphQlResolvers,
+    graphiql: process.env.DEBUG == "true" ? true : false
+  })
+);
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+mongoose
+  .connect("mongodb://localhost:27017/restaurant")
+  .then(() => {
+    app.listen(3001);
+  })
+  .catch(err => {
+    console.log(err);
+  });
