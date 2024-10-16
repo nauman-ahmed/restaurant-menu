@@ -60,14 +60,14 @@ export default function Student() {
                             Hi, Student
                         </div>
                         <div onClick={()=> setTab(1)} className={`cursor-pointer w-100 p-2 ${tab === 1 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
-                            ⦿ User Prefrences
+                            ⦿ Student Dashboard
                         </div>
-                        <div onClick={()=> setTab(2)} className={`cursor-pointer w-100 p-2 ${tab === 2 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
+                        {/* <div onClick={()=> setTab(2)} className={`cursor-pointer w-100 p-2 ${tab === 2 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
                             ⦿ Manage Notifications
                         </div>
                         <div onClick={()=> setTab(3)} className={`cursor-pointer w-100 p-2 ${tab === 3 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
                             ⦿ Favorites
-                        </div>
+                        </div> */}
 
 
                     </div>

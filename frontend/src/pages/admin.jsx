@@ -59,7 +59,7 @@ export default function Admin() {
                         }} className=" my-1 mb-3 cursor-pointer w-100  text text-black border-circular">
                             Admin Dashboard
                         </div>
-                        <div onClick={() => setTab(1)} className={`cursor-pointer w-100 p-2 ${tab === 1 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
+                        {/* <div onClick={() => setTab(1)} className={`cursor-pointer w-100 p-2 ${tab === 1 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
                             ⦿ Favorite Insights
                         </div>
                         <div onClick={() => setTab(2)} className={`cursor-pointer w-100 p-2 ${tab === 2 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
@@ -67,7 +67,7 @@ export default function Admin() {
                         </div>
                         <div onClick={() => setTab(3)} className={`cursor-pointer w-100 p-2 ${tab === 3 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
                             ⦿ Website Settings
-                        </div>
+                        </div> */}
 
 
                     </div>

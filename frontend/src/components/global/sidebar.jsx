@@ -8,7 +8,7 @@ export default function Sidebar({ showSidebar, setShowSidebar }) {
     const [tab, setTab] = useState(1)
 
     const menuItems = ['Menu', 'About Us']
-    const studentItems = ['User Preferences', 'Manage Notifications', 'Favorites']
+    const studentItems = ['Home']
     const adminItems = ['Favorite Insights', 'User Preferences', 'Website Settings']
 
     return (

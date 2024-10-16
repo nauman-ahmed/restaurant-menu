@@ -88,7 +88,7 @@ export default function Menu() {
       setShowFavorites(true);
       getUserFavoriteAndRatingsHandler();
     } 
-    localStorage.removeItem('menuData')
+    // localStorage.removeItem('menuData')
     if (localStorage.getItem('menuData')) {
       const menuData = JSON.parse(localStorage.getItem('menuData'));
       if (menuData?.some(obj => obj.date.includes(months[new Date().getMonth()])) && menuData?.some(obj => obj.date.split(' ')[1] === new Date().getDate)) {
@@ -108,10 +108,12 @@ export default function Menu() {
       setSearching(true);
       setDuration('');
       const searchingData = [];
+      
       menu?.forEach(mainobj => {
         mainobj.data.forEach(mealObj => {
           mealObj.foods.forEach(item => {
-            if (item.toLowerCase().split('-').some(itemWord => itemWord?.startsWith(searchText?.toLowerCase()))) {
+            // Split the item into an array of words before applying some()
+            if (item.toLowerCase().startsWith(searchText?.toLowerCase())) {
               searchingData.push({
                 date: mainobj.date + ' | ' + mainobj.day,
                 meal: mealObj.meal,
@@ -121,6 +123,8 @@ export default function Menu() {
           });
         });
       });
+    
+      console.log("WOW", searchingData)
       setSearchedData(searchingData);
     }
   };
@@ -173,6 +177,35 @@ export default function Menu() {
                 />
               </div>
 
+              {searching && (
+                <>
+                  {searchedData ? <>
+                    {searchedData.length > 0 ?
+                      <div style={{ gap: '5px' }} className="w-100 d-flex my-4 flex-col">
+                        {searchedData?.map(data => <div className="border-circular w-100 bg-lightorange p-2 d-flex flex-col ">
+                          <p className="fs-17 my-1" dangerouslySetInnerHTML={{ __html: `○ <b>${data.item.split('-')[0]}</b>${data.item.split('-')[1] ? ` - ${data.item.split('-')[1]}` : ''}${data.item.split('-')[2] ? ` - ${data.item.split('-')[2]}` : ''}${data.item.split('-')[3] ? ` - ${data.item.split('-')[3]}` : ''}${data.item.split('-')[4] ? ` - ${data.item.split('-')[4]}` : ''}` }}>
+                          </p>
+                          <div className="w-100 d-flex justify-content-end ">
+                            <div style={{ width: '250px' }} className=" fs-14 bg-orange p-1 border-circular text-white">
+                              {data.date}<br/> {data.meal}
+                            </div>
+                          </div>
+                        </div>
+                        )}
+                      </div>
+                      :
+                      <p className="text text-center my-4" style={{ color: 'rgba(252,114,76,255)' }}>No any food item Found!</p>
+                    }
+                  </> :
+                    <>
+                      <p className="text text-center my-4" style={{ color: 'rgba(252,114,76,255)' }}>Searching...</p>
+                    </>}
+
+
+                 
+                </>
+              )}
+              
               {duration === 'day' && (
                 <>
                   <div style={{ gap: '10px', maxWidth: '400px' }} className="w-100 mx-auto mt-5 d-flex justify-content-center align-items-center flex-row">

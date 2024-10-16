@@ -26,7 +26,6 @@ export default function Navbar({ page }) {
 
   const getSubscriptionHandler = async () => {
     const { data, status } = await getSubscribeApi()
-    console.log("Subs", data)
     setIsSubscribed(data);
   }
   
