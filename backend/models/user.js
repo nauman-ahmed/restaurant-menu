@@ -28,6 +28,10 @@ const userSchema = new Schema({
     required: true,
     default: "Student"
   },
+  isSubscribedToNewsletter: {
+    type: Boolean,
+    default: false,
+  },
   favorites: [menuItemSchema],
   ratings: [ratingSchema]
 });

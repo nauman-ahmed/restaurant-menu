@@ -19,6 +19,7 @@ type User {
   email: String!
   password: String
   role: String!
+  isSubscribedToNewsletter: Boolean!
   favorites: [MenuItem!]!
   ratings: [Ratings!]!  # Field for rating
 }
@@ -49,6 +50,7 @@ type RootQuery {
     users: [User!]!
     userFavorites(userId: ID!): [MenuItem!]! 
     userRatings(userId: ID!): [Ratings!]! 
+    getSubscription(userId: ID!): User! 
 }
 
 type RootMutation {
@@ -57,6 +59,8 @@ type RootMutation {
     addFavorite(userId: ID!, menuItemInput: MenuItemInput): User 
     removeFavorite(userId: ID!, menuItemName: String!): User 
     rateFavoriteMenuItem(rateMenuItemInput: RateMenuItemInput): User 
+    subscribeToNewsletter(userId: ID!): User
+    unsubscribeFromNewsletter(userId: ID!): User
 }
 
 schema {

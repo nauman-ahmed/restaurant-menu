@@ -1,30 +1,44 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import { Col, Row } from "reactstrap";
-import { CiDark } from "react-icons/ci";
-import { CiLight } from "react-icons/ci";
-import { HiMenuAlt1 } from "react-icons/hi";
+import { CiDark, CiLight } from "react-icons/ci";  // Theme icons
+import { HiMenuAlt1 } from "react-icons/hi";  // Menu icon
+import { FaEnvelopeOpenText, FaEnvelope } from "react-icons/fa";  // Subscription icons
 
 import LoginModal from './loginModal';
 import SignupModal from './signUpModal';
 import Sidebar from './sidebar';
+import { subscribeApi, unSubscribeApi, getSubscribeApi } from '../../APIs/subscription';
 
 export default function Navbar({ page }) {
-  const [loginModal, setLoginModal] = useState(false)
-  const [signUpModal, setSignUpModal] = useState(false)
-  const navigate = useNavigate()
+  const [loginModal, setLoginModal] = useState(false);
+  const [signUpModal, setSignUpModal] = useState(false);
+  const navigate = useNavigate();
   const [path, setPath] = useState("");
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [showSidebar, setShowSidebar] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
-  const [theme, setTheme] = useState(document.body.getAttribute('data-theme'))
+  const [theme, setTheme] = useState(document.body.getAttribute('data-theme'));
   
+  // Subscription state
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const getSubscriptionHandler = async () => {
+    const { data, status } = await getSubscribeApi()
+    console.log("Subs", data)
+    setIsSubscribed(data);
+  }
+  
+  useEffect(() => {
+    getSubscriptionHandler()
+  }, [page]);
+
   useEffect(() => {
     setPath(window.location.pathname);
   }, [window.location.pathname]);
 
+  // Toggle Sidebar
   const handleSidebarToggle = () => {
     if (showSidebar) {
       setIsAnimatingOut(true);
@@ -37,19 +51,29 @@ export default function Navbar({ page }) {
     }
   }
 
+  // Toggle Theme
   const toggleTheme = () => {
     const currentTheme = document.body.getAttribute('data-theme');
     document.body.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
-    setTheme(document.body.getAttribute('data-theme'))
+    setTheme(document.body.getAttribute('data-theme'));
   }
   
+  // Handle Subscribe/Unsubscribe
+  const handleSubscriptionToggle = async () => {
+    console.log("Subsss", isSubscribed)
+    if(isSubscribed){
+      await unSubscribeApi()
+    }else{
+      await subscribeApi()
+    }
+    setIsSubscribed(!isSubscribed);
+  }
+
   return (
     <>
-    
       <nav style={{ backgroundColor: 'black' }} className="navbar navbar-expand-md bg-inverse fixed-top scrolling-navbar">
-        
-        <LoginModal loginModal = {loginModal} setLoginModal = {setLoginModal} />
-        <SignupModal signupModal = {signUpModal} setSignupModal = {setSignUpModal} />
+        <LoginModal loginModal={loginModal} setLoginModal={setLoginModal} />
+        <SignupModal signupModal={signUpModal} setSignupModal={setSignUpModal} />
 
         <div style={{ height: '75px' }} className="container">
           <a className="navbar-brand">
@@ -73,36 +97,55 @@ export default function Navbar({ page }) {
                   Menu
                 </a>
               </li>
-
-
               <li className="nav-item">
-                <a className="nav-link page-scroll cursor-pointer" >
+                <a className="nav-link page-scroll cursor-pointer">
                   About Us
                 </a>
               </li>
               <li className="nav-item">
                 {page ?
                   <a onClick={() => {
-                    localStorage.removeItem('credentials')
-                    navigate('/')
-                  }} className="btn btn-singin text-white" >
+                    localStorage.removeItem('credentials');
+                    navigate('/');
+                  }} className="btn btn-singin text-white">
                     Log Out
                   </a>
                   :
-                  <a onClick={() => setLoginModal(true)} className="btn btn-singin text-white" >
+                  <a onClick={() => setLoginModal(true)} className="btn btn-singin text-white">
                     Log In
                   </a>
                 }
               </li>
               <li className="nav-item">
-                {page ?
-                 null
-                  :
-                  <a onClick={() => setSignUpModal(true)} className="btn btn-singin text-white" >
+                {page ? null : 
+                  <a onClick={() => setSignUpModal(true)} className="btn btn-singin text-white">
                     Sign Up
                   </a>
                 }
               </li>
+
+              {/* Subscribe/Unsubscribe button */}
+              {page &&
+                <li className="nav-item">
+                  <Button
+                    onClick={handleSubscriptionToggle}
+                    color={isSubscribed ? 'danger' : 'success'}
+                    className="ml-2"
+                  >
+                    {isSubscribed ? (
+                      <>
+                        <FaEnvelopeOpenText style={{ marginRight: '5px' }} /> Unsubscribe
+                      </>
+                    ) : (
+                      <>
+                        <FaEnvelope style={{ marginRight: '5px' }} /> Subscribe
+                      </>
+                    )}
+                  </Button>
+                </li>
+              }
+              
+
               <li className="nav-item">
                 <div onClick={toggleTheme} style={{ width: '40px', height: '40px', borderRadius: '100px' }} className='ml-2 cursor-pointer'>
                   {theme === 'dark' ?
@@ -116,22 +159,17 @@ export default function Navbar({ page }) {
         </div>
       </nav>
 
+      {/* Mobile Navbar */}
       <nav style={{ backgroundColor: 'black' }} className=" fixed-top navbar-mobile scrolling-navbar">
         <div style={{ height: '75px' }} className="container d-flex justify-content-between align-items-center">
           <div className='d-flex align-items-center'>
-
-            <button onClick={handleSidebarToggle}
-              className="navbar-toggler"
-
-            >
-             <HiMenuAlt1 className='text-white' style={{ fontSize : '30px'}}  />
-
+            <button onClick={handleSidebarToggle} className="navbar-toggler">
+              <HiMenuAlt1 className='text-white' style={{ fontSize: '30px' }} />
             </button>
-            <a >
+            <a>
               <img width={60} height={60} src="img/logo.png" alt="" />
             </a>
           </div>
-
 
           <div className="nav-item d-flex flex-row gap-2">
             {page ?
@@ -141,11 +179,10 @@ export default function Navbar({ page }) {
                 padding: '8px 10px',
                 marginLeft: '30px',
                 boxShadow: '0px 8px 9px 0px rgba(96, 94, 94, 0.17)'
-
               }} onClick={() => {
-                localStorage.removeItem('credentials')
-                navigate('/')
-              }} className="btn " >
+                localStorage.removeItem('credentials');
+                navigate('/');
+              }} className="btn">
                 Log Out
               </a>
               :
@@ -155,25 +192,30 @@ export default function Navbar({ page }) {
                 padding: '8px 10px',
                 marginLeft: '30px',
                 boxShadow: '0px 8px 9px 0px rgba(96, 94, 94, 0.17)'
-
-              }} onClick={() => setLoginModal(true)} className="btn" >
+              }} onClick={() => setLoginModal(true)} className="btn">
                 Log In
               </a>
             }
-            {page ?
-              null
-              :
-              <a style={{
-                background: '#fc724c',
-                color: 'white',
-                padding: '8px 10px',
-                marginLeft: '30px',
-                boxShadow: '0px 8px 9px 0px rgba(96, 94, 94, 0.17)'
 
-              }} onClick={() => setSignUpModal(true)} className="btn" >
-                Sign Up
-              </a>
+            {/* Subscribe/Unsubscribe button for mobile */}
+            {page &&
+              <Button
+                onClick={handleSubscriptionToggle}
+                color={isSubscribed ? 'danger' : 'success'}
+                className="ml-2"
+              >
+                {isSubscribed ? (
+                  <>
+                    <FaEnvelopeOpenText style={{ marginRight: '5px' }} /> Unsubscribe
+                  </>
+                ) : (
+                  <>
+                    <FaEnvelope style={{ marginRight: '5px' }} /> Subscribe
+                  </>
+                )}
+              </Button>
             }
+
             <div onClick={toggleTheme} style={{ width: '40px', height: '40px', borderRadius: '100px' }} className='ml-2 cursor-pointer'>
               {theme === 'dark' ?
                 <CiLight style={{ fontSize: '40px', color: 'white' }} />
@@ -184,8 +226,7 @@ export default function Navbar({ page }) {
         </div>
       </nav>
 
-      {showSidebar && <Sidebar showSidebar = {showSidebar} setShowSidebar = {setShowSidebar} />}
-    
+      {showSidebar && <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />}
     </>
-  )
+  );
 }

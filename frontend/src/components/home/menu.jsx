@@ -88,7 +88,7 @@ export default function Menu() {
       setShowFavorites(true);
       getUserFavoriteAndRatingsHandler();
     } 
-
+    localStorage.removeItem('menuData')
     if (localStorage.getItem('menuData')) {
       const menuData = JSON.parse(localStorage.getItem('menuData'));
       if (menuData?.some(obj => obj.date.includes(months[new Date().getMonth()])) && menuData?.some(obj => obj.date.split(' ')[1] === new Date().getDate)) {
@@ -212,7 +212,7 @@ export default function Menu() {
                                     <FaRegHeart onClick={() => toggleFavorite(food)} style={{ cursor: 'pointer' }} />
                                   ): null}
                                   <div className="ml-3">
-                                    {[1, 2, 3, 4, 5].map((star) => (
+                                    {showFavorites && [1, 2, 3, 4, 5].map((star) => (
                                       ratings[food] >= star ? (
                                         <FaStar key={star} onClick={() => handleRating(food, star)} style={{ color: 'gold', cursor: 'pointer' }} />
                                       ) : (
