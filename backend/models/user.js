@@ -3,7 +3,15 @@ const Schema = mongoose.Schema;
 
 const menuItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  description: { type: String }
+  description: { type: String },
+});
+
+const ratingSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  rating: {
+    type: Number,
+    default: 0  
+  }
 });
 
 const userSchema = new Schema({
@@ -20,7 +28,8 @@ const userSchema = new Schema({
     required: true,
     default: "Student"
   },
-  favorites: [menuItemSchema]
+  favorites: [menuItemSchema],
+  ratings: [ratingSchema]
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -2,18 +2,25 @@ const { buildSchema } = require('graphql');
 
 module.exports = buildSchema(`
 
-type User {
+type Ratings {
   _id: ID!
-  email: String!
-  password: String
-  role: String!
-  favorites: [MenuItem!]!
+  name: String!
+  rating: Int!
 }
 
 type MenuItem {
   _id: ID!
   name: String!
   description: String
+}
+
+type User {
+  _id: ID!
+  email: String!
+  password: String
+  role: String!
+  favorites: [MenuItem!]!
+  ratings: [Ratings!]!  # Field for rating
 }
 
 input UserInput {
@@ -32,9 +39,16 @@ input MenuItemInput {
   description: String
 }
 
+input RateMenuItemInput {
+  userId: ID!  
+  menuItemName: String!  
+  rating: Int!  
+}
+
 type RootQuery {
     users: [User!]!
     userFavorites(userId: ID!): [MenuItem!]! 
+    userRatings(userId: ID!): [Ratings!]! 
 }
 
 type RootMutation {
@@ -42,6 +56,7 @@ type RootMutation {
     loginUser(userInput: UserCredentials): User
     addFavorite(userId: ID!, menuItemInput: MenuItemInput): User 
     removeFavorite(userId: ID!, menuItemName: String!): User 
+    rateFavoriteMenuItem(rateMenuItemInput: RateMenuItemInput): User 
 }
 
 schema {

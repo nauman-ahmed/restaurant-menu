@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { FaChevronDown, FaChevronUp, FaHeart, FaRegHeart } from "react-icons/fa6";
+import { FaChevronDown, FaChevronUp, FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa6";  // Import star icons
 import dayjs from "dayjs";
 import axios from "axios";
 import { toast } from 'react-toastify';
-import { addFavorite, getUserFavorite, removeFavorite } from "../../APIs/favourite"
-import { getFoodNames } from "../../utilities";
+import { addFavorite, getUserFavorite, removeFavorite } from "../../APIs/favourite";
+import { getUserRatings, updateRating } from "../../APIs/ratings";
+import { getFoodNames, getRatingsObj } from "../../utilities";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -19,9 +20,10 @@ export default function Menu() {
   const [searchText, setSearchText] = useState('');
   const [searchedData, setSearchedData] = useState(null);
   const [searching, setSearching] = useState(false);
-  const [showFavorites, setShowFavorites] = useState(false); // Store favorite food items
-  const [favorites, setFavorites] = useState([]); // Store favorite food items
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [favorites, setFavorites] = useState([]);
   const [menu, setMenu] = useState(null);
+  const [ratings, setRatings] = useState({});  // State to store ratings for food items
 
   const handleNextDay = () => {
     setOpenMenu(0);
@@ -34,7 +36,6 @@ export default function Menu() {
   };
 
   const toggleFavorite = async (food) => {
-
     try {
       if (favorites.includes(food)) {
         const { data, status } = await removeFavorite(food);
@@ -42,40 +43,34 @@ export default function Menu() {
             toast.error('Login failed. Try again.');
             return 
         }
-        const foodNames = getFoodNames(data.favorites)
+        const foodNames = getFoodNames(data.favorites);
         setFavorites(foodNames);
       } else {
-
         const { data, status } = await addFavorite(food);
         if(status !== 200){
             toast.error('Login failed. Try again.');
             return 
         }
-        const foodNames = getFoodNames(data.favorites)
+        const foodNames = getFoodNames(data.favorites);
         setFavorites([...foodNames]);
-
       }
-      
-
-        
     } catch (error) {
-      console.log("Error", error)
+      console.log("Error", error);
     }
-
   };
 
-  const getUserFavoriteHandler = async () => {
-    
+  const getUserFavoriteAndRatingsHandler = async () => {
     try {
-
-      const { data, status } = await getUserFavorite()
-      setFavorites(getFoodNames(data))
-
+      const { data, status } = await getUserFavorite();
+      setFavorites(getFoodNames(data));
+      let ratings = await getUserRatings();
+      setRatings(getRatingsObj(ratings.data))
     } catch (error) {
-      console.log("Error")
+      console.log("Error", error);
     }
+  };
+
   
-  }
 
   const getData = async () => {
     await axios.get(backendUrl + '/scrape').then(res => {
@@ -87,11 +82,11 @@ export default function Menu() {
   };
 
   useEffect(() => {
-    const credentials = localStorage.getItem('credentials') && JSON.parse(localStorage.getItem('credentials'))
+    const credentials = localStorage.getItem('credentials') && JSON.parse(localStorage.getItem('credentials'));
     
     if (credentials?.role === 'Student') {
-      setShowFavorites(true)
-      getUserFavoriteHandler()
+      setShowFavorites(true);
+      getUserFavoriteAndRatingsHandler();
     } 
 
     if (localStorage.getItem('menuData')) {
@@ -136,6 +131,18 @@ export default function Menu() {
         applySearch();
       }
     }
+  };
+
+  const handleRating = async (food, rating) => {
+
+    try {
+      const { data, status } = await updateRating(food, rating)
+      setRatings(getRatingsObj(data.ratings));
+        
+    } catch (error) {
+      console.log("Error", error)      
+    }
+    
   };
 
   return (
@@ -196,12 +203,24 @@ export default function Menu() {
                             {foodInfo.foods?.map((food, foodIndex) => (
                               <li key={foodIndex} style={{ fontSize: '16px' }} className="d-flex align-items-center justify-content-between">
                                 <span dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}` }}></span>
-                                {/* Favorite Icon */}
-                                {showFavorites ? favorites.includes(food) ? (
-                                  <FaHeart onClick={() => toggleFavorite(food)} style={{ color: 'red', cursor: 'pointer' }} />
-                                ) : (
-                                  <FaRegHeart onClick={() => toggleFavorite(food)} style={{ cursor: 'pointer' }} />
-                                ): null}
+                                {/* Rating System */}
+                                <div className="rating-system d-flex">
+                                  {/* Favorite Icon */}
+                                  {showFavorites ? favorites.includes(food) ? (
+                                    <FaHeart onClick={() => toggleFavorite(food)} style={{ color: 'red', cursor: 'pointer' }} />
+                                  ) : (
+                                    <FaRegHeart onClick={() => toggleFavorite(food)} style={{ cursor: 'pointer' }} />
+                                  ): null}
+                                  <div className="ml-3">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      ratings[food] >= star ? (
+                                        <FaStar key={star} onClick={() => handleRating(food, star)} style={{ color: 'gold', cursor: 'pointer' }} />
+                                      ) : (
+                                        <FaRegStar key={star} onClick={() => handleRating(food, star)} style={{ cursor: 'pointer' }} />
+                                      )
+                                    ))}
+                                  </div>
+                                </div>
                               </li>
                             ))}
                           </ul>
