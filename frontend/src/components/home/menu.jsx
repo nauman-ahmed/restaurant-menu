@@ -173,7 +173,8 @@ export default function Menu() {
       setRatings(getRatingsObj(data.ratings));
         
     } catch (error) {
-      console.log("Error", error)      
+      console.log("Error", error)     
+       
     }
     
   };
