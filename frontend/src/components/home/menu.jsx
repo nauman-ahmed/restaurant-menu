@@ -24,6 +24,37 @@ export default function Menu() {
   const [favorites, setFavorites] = useState([]);
   const [menu, setMenu] = useState(null);
   const [ratings, setRatings] = useState({});  // State to store ratings for food items
+  const [showBanner, setShowBanner] = useState(false);
+  const [bannerMessage, setBannerMessage] = useState('');
+
+  useEffect(() => {
+    const checkTimeForBanner = () => {
+      const currentTime = new Date();
+      const currentHour = currentTime.getHours();
+      const currentMinutes = currentTime.getMinutes();
+
+      // Set time conditions
+      const isMorningBannerTime = currentHour === 7 && currentMinutes >= 0 && currentMinutes <= 30; // 7:00 AM to 7:30 AM
+      const isEveningBannerTime = currentHour === 18 && currentMinutes >= 30; // 6:30 PM to 7:00 PM
+
+      if (isMorningBannerTime) {
+        setShowBanner(true);
+        setBannerMessage('The Cafeteria is about to open at 7:30 AM');
+      } else if (isEveningBannerTime) {
+        setShowBanner(true);
+        setBannerMessage('The Cafeteria is about to close at 7:00 PM');
+      } else {
+        setBannerMessage('The Cafeteria is about to open at 7:30 AM');
+        setShowBanner(false); // Hide banner outside of those times
+      }
+    };
+
+    // Initial check and set interval to check every minute
+    checkTimeForBanner();
+    const intervalId = setInterval(checkTimeForBanner, 60000); // Check every minute
+
+    return () => clearInterval(intervalId); // Clean up on component unmount
+  }, []);
 
   const handleNextDay = () => {
     setOpenMenu(0);
@@ -152,6 +183,11 @@ export default function Menu() {
   return (
     <>
       <div>
+        {!showBanner && (
+          <div className="banner">
+            <h2 className="banner-text">{bannerMessage}</h2>
+          </div>
+        )}
         <div className="features-text section-header text-center">
           <div>
             <h2 className="section-title">Our Food Menu</h2>

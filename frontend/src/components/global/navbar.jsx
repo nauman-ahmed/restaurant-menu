@@ -30,7 +30,9 @@ export default function Navbar({ page }) {
   }
   
   useEffect(() => {
-    getSubscriptionHandler()
+    if(page){
+      getSubscriptionHandler()
+    }
   }, [page]);
 
   useEffect(() => {

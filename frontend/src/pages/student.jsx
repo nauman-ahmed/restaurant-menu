@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 export default function Student() {
     const navigate = useNavigate()
     const [tab , setTab] = useState(1)
+    
     useEffect(() => {
         const credentials = localStorage.getItem('credentials') && JSON.parse(localStorage.getItem('credentials'))
         if (credentials?.role !== 'Student') {

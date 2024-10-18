@@ -634,6 +634,24 @@ button:focus {
   background-color: #000000cc;
 }
 
+.banner {
+  background-color: rgba(255, 165, 0, 0.9); /* Orange background */
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 1.2rem;
+  position: relative;
+  z-index: 1000;
+  margin-bottom: 5%;
+}
+
+.banner-text {
+  font-size: 35px;
+  font-weight: 600;
+  position: relative;
+  color: red;
+}
+
 .hero-area .overlay {
   position: absolute;
   width: 100%;

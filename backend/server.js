@@ -15,7 +15,10 @@ const {scrapeMenuData, customMenu} = require("./graphql/resolvers/fetchData")
 dotenv.config();
 const app = express();
 const PORT = 5003;
-app.use(cors())
+app.use(cors({
+  origin: "*",
+  credentials: true
+}))
 app.use(bodyParser.json());
 
 app.get('/scrape', async (req, res) => {
@@ -37,9 +40,7 @@ app.use(
   })
 );
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => { console.log(`Server is running on http://localhost:${PORT}`); });
 
 mongoose
   .connect( process.env.DEBUG == "true" ? process.env.MONGO_URI_LOCAL : process.env.MONGO_URI_PROD)
