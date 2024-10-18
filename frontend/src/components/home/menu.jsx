@@ -210,8 +210,26 @@ export default function Menu() {
                   placeholder="Search here"
                   type="text"
                 />
+                
               </div>
-
+              <div style={{ gap: '20px' }} className="w-100 d-flex justify-content-center align-items-center flex-row">
+                <div onClick={() => {
+                  setDuration('day')
+                  setSearchText('')
+                  setSearching(false)
+                  setSearchedData(null)
+                } } className={`p-2 text-center dayWeek-option ${duration === 'day' ? "dayWeek-selected" : ''} border-circular`}>
+                  DAY
+                </div>
+                <div onClick={() => {
+                  setDuration('week')
+                  setSearching(false);
+                  setSearchedData(null)
+                  setSearchText('')
+                }} className={` p-2 text-center  ${duration === 'week' ? "dayWeek-selected" : ''} dayWeek-option border-circular`}>
+                  WEEK
+                </div>
+              </div>
               {searching && (
                 <>
                   {searchedData ? <>
@@ -298,6 +316,67 @@ export default function Menu() {
                   </div>
                 </>
               )}
+
+              {duration === 'week' && (
+                <>
+                  <div style={{ gap: '20px', }} className="w-100 mt-5 d-flex justify-content-center flex-wrap align-items-center flex-row">
+                    {menu.map((obj, index) => (
+                      <div style={{ borderRadius: '40px', }} onClick={() => {
+                        setOpenMenu(0)
+                        setDataIndex(index)
+                      }} className={`p-2 text-center day-option ${dataIndex === index ? "dayWeek-selected" : ''} `}>
+                        {obj.day}
+                      </div>
+                    ))}
+
+                  </div>
+                  <div style={{ maxWidth: '700px', width: '100%' }} className=" my-5 text text-black mx-auto">
+                    {menu[dataIndex].data?.map((foodInfo, index) => (
+                      <>
+                        <div key={index} onClick={() => {
+                          setOpenMenu(openMenu === index ? null : index)
+                        }} className={`w-100 d-flex cursor-pointer justify-content-between border-circular ${openMenu === index ? 'bg-orange text-white' : 'bg-lightdark text-black'}   align-items-center p-2 border-bottom border-secondary`}>
+                          <p className={`${openMenu === index ? 'text-white' : 'text-black'} text `}>{foodInfo.meal}</p>
+
+                          {openMenu === index ? <FaChevronUp className="cursor-pointer" /> :
+                            <FaChevronDown className="cursor-pointer" />
+                          }
+                        </div>
+                        {openMenu === index && (
+                          <ul className="bg-lightorange p-3 border-circular" style={{ paddingLeft: '20px', marginBottom: '15px' }}>
+                            {foodInfo.foods?.map((food, foodIndex) => (
+                              <li key={foodIndex} style={{ fontSize: '16px' }}
+                              className="d-flex align-items-center justify-content-between"
+                              >
+                                <span dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}${food.split('-')[2] ? ` - ${food.split('-')[2]}` : ''}${food.split('-')[3] ? ` - ${food.split('-')[3]}` : ''}${food.split('-')[4] ? ` - ${food.split('-')[4]}` : ''}` }} /> 
+                                 {/* Rating System */}
+                                <div className="rating-system d-flex">
+                                  {/* Favorite Icon */}
+                                  {showFavorites ? favorites.includes(food) ? (
+                                    <FaHeart onClick={() => toggleFavorite(food)} style={{ color: 'red', cursor: 'pointer' }} />
+                                  ) : (
+                                    <FaRegHeart onClick={() => toggleFavorite(food)} style={{ cursor: 'pointer' }} />
+                                  ): null}
+                                  <div className="ml-3">
+                                    {showFavorites && [1, 2, 3, 4, 5].map((star) => (
+                                      ratings[food] >= star ? (
+                                        <FaStar key={star} onClick={() => handleRating(food, star)} style={{ color: 'gold', cursor: 'pointer' }} />
+                                      ) : (
+                                        <FaRegStar key={star} onClick={() => handleRating(food, star)} style={{ cursor: 'pointer' }} />
+                                      )
+                                    ))}
+                                  </div>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </>
+                    ))}
+                  </div >
+                </>
+              )}
+
             </div>
           </>
         ) : (<p className="text text-center" style={{ color: 'rgba(252,114,76,255)' }}>Loading...</p>)}
