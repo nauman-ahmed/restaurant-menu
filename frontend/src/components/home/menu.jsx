@@ -44,7 +44,6 @@ export default function Menu() {
         setShowBanner(true);
         setBannerMessage('The Cafeteria is about to close at 7:00 PM');
       } else {
-        setBannerMessage('The Cafeteria is about to open at 7:30 AM');
         setShowBanner(false); // Hide banner outside of those times
       }
     };
@@ -155,7 +154,6 @@ export default function Menu() {
         });
       });
     
-      console.log("WOW", searchingData)
       setSearchedData(searchingData);
     }
   };
@@ -183,7 +181,7 @@ export default function Menu() {
   return (
     <>
       <div>
-        {!showBanner && (
+        {showBanner && (
           <div className="banner">
             <h2 className="banner-text">{bannerMessage}</h2>
           </div>
