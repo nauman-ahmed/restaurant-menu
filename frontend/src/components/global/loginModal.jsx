@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, Row, Col } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../store/credentialsSlice';
 import { login } from '../../APIs/auth';
 
 export default function LoginModal({ loginModal, setLoginModal }) {
     
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -21,11 +23,14 @@ export default function LoginModal({ loginModal, setLoginModal }) {
                 return 
             }
 
+            dispatch(setCredentials({
+                email: data.email,
+                role: data.role,
+                _id: data._id,
+              }));
             if (data.role === 'Student') {
-                localStorage.setItem('credentials', JSON.stringify({ email:data.email, role:data.role, _id:data._id  }));
                 navigate('/student');
             } else if (data.role === 'Admin') {
-                localStorage.setItem('credentials', JSON.stringify({ email:data.email, role:data.role, _id:data._id  }));
                 navigate('/admin');
             } else {
                 toast.error('Wrong Credentials');

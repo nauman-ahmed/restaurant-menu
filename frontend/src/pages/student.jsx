@@ -10,9 +10,9 @@ export default function Student() {
     
     useEffect(() => {
         const credentials = localStorage.getItem('credentials') && JSON.parse(localStorage.getItem('credentials'))
+        console.log("ROle", credentials)
         if (credentials?.role !== 'Student') {
             navigate('/')
-
         } 
         const handleScroll = () => {
             const scrollPosition = window.scrollY;

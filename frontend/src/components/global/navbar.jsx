@@ -5,13 +5,18 @@ import { Col, Row } from "reactstrap";
 import { CiDark, CiLight } from "react-icons/ci";  // Theme icons
 import { HiMenuAlt1 } from "react-icons/hi";  // Menu icon
 import { FaEnvelopeOpenText, FaEnvelope } from "react-icons/fa";  // Subscription icons
-
+import { useSelector } from 'react-redux';
 import LoginModal from './loginModal';
 import SignupModal from './signUpModal';
 import Sidebar from './sidebar';
 import { subscribeApi, unSubscribeApi, getSubscribeApi } from '../../APIs/subscription';
+import { useDispatch } from 'react-redux';
+import { clearCredentials } from '../../store/credentialsSlice';
 
 export default function Navbar({ page }) {
+  
+  const dispatch = useDispatch();
+  const credentials = useSelector((state) => state.credentials.credentials);
   const [loginModal, setLoginModal] = useState(false);
   const [signUpModal, setSignUpModal] = useState(false);
   const navigate = useNavigate();
@@ -30,7 +35,8 @@ export default function Navbar({ page }) {
   }
   
   useEffect(() => {
-    if(page){
+
+    if(page || credentials){
       getSubscriptionHandler()
     }
   }, [page]);
@@ -61,7 +67,6 @@ export default function Navbar({ page }) {
   
   // Handle Subscribe/Unsubscribe
   const handleSubscriptionToggle = async () => {
-    console.log("Subsss", isSubscribed)
     if(isSubscribed){
       await unSubscribeApi()
     }else{
@@ -104,9 +109,9 @@ export default function Navbar({ page }) {
                 </a>
               </li>
               <li className="nav-item">
-                {page ?
+                {page || credentials ?
                   <a onClick={() => {
-                    localStorage.removeItem('credentials');
+                    dispatch(clearCredentials());
                     navigate('/');
                   }} className="btn btn-singin text-white">
                     Log Out
@@ -118,7 +123,7 @@ export default function Navbar({ page }) {
                 }
               </li>
               <li className="nav-item">
-                {page ? null : 
+                {page || credentials ? null : 
                   <a onClick={() => setSignUpModal(true)} className="btn btn-singin text-white">
                     Sign Up
                   </a>
@@ -126,7 +131,7 @@ export default function Navbar({ page }) {
               </li>
 
               {/* Subscribe/Unsubscribe button */}
-              {page &&
+              {page || credentials ?
                 <li className="nav-item">
                   <Button
                     onClick={handleSubscriptionToggle}
@@ -144,6 +149,7 @@ export default function Navbar({ page }) {
                     )}
                   </Button>
                 </li>
+                : null
               }
               
 
@@ -181,7 +187,6 @@ export default function Navbar({ page }) {
                 marginLeft: '30px',
                 boxShadow: '0px 8px 9px 0px rgba(96, 94, 94, 0.17)'
               }} onClick={() => {
-                localStorage.removeItem('credentials');
                 navigate('/');
               }} className="btn">
                 Log Out

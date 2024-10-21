@@ -2,13 +2,20 @@ import { useEffect, useState } from 'react';
 import Navbar from "../components/global/navbar";
 import Menu from "../components/home/menu";
 import Footer from "../components/global/footer";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Home() {
+  const navigate = useNavigate()
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState('');
 
   useEffect(() => {
+    const credentials = localStorage.getItem('credentials') && JSON.parse(localStorage.getItem('credentials'))
+    console.log("ROle", credentials)
+    if (credentials?.role === 'Student') {
+        navigate('/student')
+    } 
     const checkTimeForBanner = () => {
       const currentTime = new Date();
       const currentHour = currentTime.getHours();
