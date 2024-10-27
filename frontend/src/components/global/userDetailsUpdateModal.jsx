@@ -1,52 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, Row, Col } from 'reactstrap';
-import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux'; 
 import { toast } from 'react-toastify';
+import { getMe, updateMe } from "../../APIs/users"
+import { setCredentials } from '../../store/credentialsSlice';
 
-import { register } from '../../APIs/auth'; // Assuming this is the registration API call
-
-export default function SignupModal({ signupModal, setSignupModal }) {
+export default function UserUpdateModal({ updateModal, setUpdateModal }) {
     
-    const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [fullName, setFullName] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const dispatch = useDispatch();  
+    const credentials = useSelector((state) => state.credentials.credentials);
+    const [email, setEmail] = useState(credentials.email);
+    const [fullName, setFullName] = useState(credentials.fullName);
+    const [newsEmail, setNewsEmail] = useState(credentials.newsEmail);
+
+    const getMeHandler = async () => {
+        const { data, status } = await getMe()
+        setEmail(data.email);
+        setFullName(data.fullName)
+        setNewsEmail(data.newsEmail);
+    }
+
+    useEffect(() => {
+        if(updateModal){
+            // getMeHandler()
+        }
+    }, [])
 
     const formSubmitHandler = async () => {
-        if (password !== confirmPassword) {
-            toast.error("Passwords do not match");
-            return;
-        }
 
         try {
 
-            const { data, status } = await register(email, password, fullName);
+            const { data, status } = await updateMe(fullName, newsEmail);
             if(status !== 200){
-                toast.error('Signup failed. Try again.');
+                toast.error('Request failed. Try again.');
                 return
             }
-            setSignupModal(false)
+            dispatch(setCredentials({
+                newsEmail: data?.newsEmail,
+                email: data?.email,
+                role: data?.role,
+                fullName: data?.fullName,
+                _id: data?._id,
+              }));
+            setUpdateModal(false)
             setEmail("")
-            setPassword("")
-            setConfirmPassword("")
+            setNewsEmail("")
             setFullName("")
             toast.success("Sign up successfully")
         } catch (error) {
-            console.error("Signup failed", error);
-            toast.error('Signup failed. Try again.');
+            console.error("Request failed", error);
+            toast.error('Request failed. Try again.');
         }
     }
 
     return (
         <>
-        <Modal isOpen={signupModal} centered={true} size="md">
+        <Modal isOpen={updateModal} centered={true} size="md">
             <ModalHeader>
                 <p style={{
                     fontSize: '20px',
                     fontWeight: 'bold'
                 }} className='w-100 text-black fw-bold text-center theme-color'>
-                    Sign Up for an Account
+                    Update Details
                 </p>
             </ModalHeader>
             <Form onSubmit={(e) => {
@@ -76,15 +91,18 @@ export default function SignupModal({ signupModal, setSignupModal }) {
                                 fontSize: '16px',
                                 color: 'gray'
                             }} className="label theme-color">
-                                Email
+                                Registered Email
                             </div>
                             <input
+                                style={{
+                                    color: "lightgrey"
+                                }} 
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 type="text"
                                 name="email"
                                 className='searchInput border-circular w-100 bg-white'
-                                required
+                                disabled
                             />
                         </Col>
                         <Col xs='12' className='my-2'>
@@ -92,29 +110,13 @@ export default function SignupModal({ signupModal, setSignupModal }) {
                                 fontSize: '16px',
                                 color: 'gray'
                             }} className="label theme-color">
-                                Password
+                                Newsletter Email 
                             </div>
                             <input
-                                type="password"
-                                onChange={(e) => setPassword(e.target.value)}
-                                value={password}
-                                name="password"
-                                className='searchInput border-circular w-100 bg-white'
-                                required
-                            />
-                        </Col>
-                        <Col xs='12' className='my-2'>
-                            <div style={{
-                                fontSize: '16px',
-                                color: 'gray'
-                            }} className="label theme-color">
-                                Confirm Password
-                            </div>
-                            <input
-                                type="password"
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                value={confirmPassword}
-                                name="confirmPassword"
+                                type="text"
+                                onChange={(e) => setNewsEmail(e.target.value)}
+                                value={newsEmail}
+                                name="newsEmail"
                                 className='searchInput border-circular w-100 bg-white'
                                 required
                             />
@@ -123,9 +125,9 @@ export default function SignupModal({ signupModal, setSignupModal }) {
                 </ModalBody>
                 <ModalFooter>
                     <Button type='submit' style={{ backgroundColor: 'orange' }}>
-                        SIGN UP
+                        Update
                     </Button>
-                    <Button onClick={() => setSignupModal(false)} color="danger">
+                    <Button onClick={() => setUpdateModal(false)} color="danger">
                         Cancel
                     </Button>
                 </ModalFooter>

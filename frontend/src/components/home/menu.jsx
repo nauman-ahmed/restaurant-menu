@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
+import { useSelector } from 'react-redux'; 
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { FaChevronDown, FaChevronUp, FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa6";  // Import star icons
 import dayjs from "dayjs";
 import axios from "axios";
 import { toast } from 'react-toastify';
 import { addFavorite, getUserFavorite, removeFavorite } from "../../APIs/favourite";
-import { getUserRatings, updateRating } from "../../APIs/ratings";
-import { getFoodNames, getRatingsObj } from "../../utilities";
+import { getFoodNames, getHH, getHHMM, getMM } from "../../utilities";
+import { getBannerTiming } from "../../APIs/banner"
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Staurday', 'Sunday'];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Novemer', 'December'];
 
-export default function Menu() {
+export default function Menu({ handleRating, ratings }) {
+
+  const credentials = useSelector((state) => state.credentials.credentials);
+  
   const [duration, setDuration] = useState('day');
   const [dataIndex, setDataIndex] = useState(0);
   const [openMenu, setOpenMenu] = useState(0);
@@ -23,26 +27,41 @@ export default function Menu() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [favorites, setFavorites] = useState([]);
   const [menu, setMenu] = useState(null);
-  const [ratings, setRatings] = useState({});  // State to store ratings for food items
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState('');
+  const [timing, setTiming] = useState({
+    startTimeOne: '',
+    endTimeOne: '',
+    startTimeTwo: '',
+    endTimeTwo: ''
+  });
+  
+  const gatBannerTimingHandler = async () => {
+    const { data, status} = await getBannerTiming(null)
+    setTiming(data)
+  }
+
+  const isWithinTimeRange = (startTime, endTime) => {
+    const current = new Date();
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    console.log("Start", start, end)
+    return current >= start && current <= end;
+  };
 
   useEffect(() => {
     const checkTimeForBanner = () => {
-      const currentTime = new Date();
-      const currentHour = currentTime.getHours();
-      const currentMinutes = currentTime.getMinutes();
 
       // Set time conditions
-      const isMorningBannerTime = currentHour === 7 && currentMinutes >= 0 && currentMinutes <= 30; // 7:00 AM to 7:30 AM
-      const isEveningBannerTime = currentHour === 18 && currentMinutes >= 30; // 6:30 PM to 7:00 PM
+      const isMorningBannerTime = isWithinTimeRange(timing.startTimeOne, timing.startTimeTwo);
+      const isEveningBannerTime = isWithinTimeRange(timing.endTimeOne, timing.endTimeTwo);
 
       if (isMorningBannerTime) {
         setShowBanner(true);
-        setBannerMessage('The Cafeteria is about to open at 7:30 AM');
+        setBannerMessage(`The Cafeteria is about to open untill ${getHHMM(timing.startTimeTwo)}`);
       } else if (isEveningBannerTime) {
         setShowBanner(true);
-        setBannerMessage('The Cafeteria is about to close at 7:00 PM');
+        setBannerMessage(`The Cafeteria is about to close at ${getHHMM(timing.endTimeTwo)}`);
       } else {
         setShowBanner(false); // Hide banner outside of those times
       }
@@ -50,6 +69,7 @@ export default function Menu() {
 
     // Initial check and set interval to check every minute
     checkTimeForBanner();
+    gatBannerTimingHandler()
     const intervalId = setInterval(checkTimeForBanner, 60000); // Check every minute
 
     return () => clearInterval(intervalId); // Clean up on component unmount
@@ -93,26 +113,24 @@ export default function Menu() {
     try {
       const { data, status } = await getUserFavorite();
       setFavorites(getFoodNames(data));
-      let ratings = await getUserRatings();
-      setRatings(getRatingsObj(ratings.data))
+      
     } catch (error) {
       console.log("Error", error);
-    }
+    } 
   };
 
   
 
   const getData = async () => {
-    await axios.get(backendUrl + '/scrape').then(res => {
-      localStorage.setItem('menuData', JSON.stringify(res.data));
+    await axios.get(backendUrl + '/scrape').then(res => { 
+    localStorage.setItem('menuData', JSON.stringify(res.data));
       const index = res.data.findIndex(obj => obj.date.split(' ')[1] == new Date().getDate());
-      setDataIndex(index);
+      setDataIndex(index == -1 ? 6 : index);
       setMenu(res.data);
     }).catch(err => console.log(err));
   };
 
   useEffect(() => {
-    const credentials = localStorage.getItem('credentials') && JSON.parse(localStorage.getItem('credentials'));
     
     if (credentials?.role === 'Student') {
       setShowFavorites(true);
@@ -166,18 +184,6 @@ export default function Menu() {
     }
   };
 
-  const handleRating = async (food, rating) => {
-
-    try {
-      const { data, status } = await updateRating(food, rating)
-      setRatings(getRatingsObj(data.ratings));
-        
-    } catch (error) {
-      console.log("Error", error)     
-       
-    }
-    
-  };
 
   return (
     <>
@@ -268,7 +274,7 @@ export default function Menu() {
                       </div>
                     )}
                     <div className="theme-color" style={{ minWidth: '70%', textAlign: "center", fontSize: '20px' }}>
-                      {menu[dataIndex].date}, {dayjs().format('YYYY')} | {menu[dataIndex].day}
+                      {menu[dataIndex]?.date}, {dayjs().format('YYYY')} | {menu[dataIndex]?.day}
                     </div>
                     {dataIndex < menu.length - 1 && (
                       <div onClick={handleNextDay} style={{ width: '40px', height: '40px', borderRadius: '100%' }} className=" bg-orange d-flex justify-content-center align-items-center cursor-pointer ">
@@ -277,7 +283,7 @@ export default function Menu() {
                     )}
                   </div>
                   <div style={{ maxWidth: '700px', width: '100%' }} className=" my-5 text text-black mx-auto">
-                    {menu[dataIndex].data?.map((foodInfo, index) => (
+                    {menu[dataIndex]?.data?.map((foodInfo, index) => (
                       <>
                         <div key={index} onClick={() => setOpenMenu(openMenu === index ? null : index)} className={`w-100 d-flex cursor-pointer justify-content-between border-circular ${openMenu === index ? 'bg-orange text-white' : 'bg-lightdark text-black'} align-items-center p-2 border-bottom border-secondary`}>
                           <p className={`${openMenu === index ? 'text-white fs-20' : 'text-black'} text `}>{foodInfo.meal}</p>
@@ -287,8 +293,8 @@ export default function Menu() {
                         {openMenu === index && (
                           <ul className="bg-lightorange p-3 border-circular" style={{ paddingLeft: '20px', marginBottom: '15px' }}>
                             {foodInfo.foods?.map((food, foodIndex) => (
-                              <li key={foodIndex} style={{ fontSize: '16px' }} className="d-flex align-items-center justify-content-between">
-                                <span dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}` }}></span>
+                              <li key={foodIndex} style={{ fontSize: '16px', display: "flex !important", alignItems: "start !important" }} className="d-flex align-items-center justify-content-between">
+                                <span style={{ width: "60%" }} dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}` }}></span>
                                 {/* Rating System */}
                                 <div className="rating-system d-flex">
                                   {/* Favorite Icon */}
@@ -345,10 +351,10 @@ export default function Menu() {
                         {openMenu === index && (
                           <ul className="bg-lightorange p-3 border-circular" style={{ paddingLeft: '20px', marginBottom: '15px' }}>
                             {foodInfo.foods?.map((food, foodIndex) => (
-                              <li key={foodIndex} style={{ fontSize: '16px' }}
+                              <li key={foodIndex} style={{ fontSize: '16px', display: "flex !important", alignItems: "start !important" }}
                               className="d-flex align-items-center justify-content-between"
                               >
-                                <span dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}${food.split('-')[2] ? ` - ${food.split('-')[2]}` : ''}${food.split('-')[3] ? ` - ${food.split('-')[3]}` : ''}${food.split('-')[4] ? ` - ${food.split('-')[4]}` : ''}` }} /> 
+                                <span style={{ width: "60%" }} dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}${food.split('-')[2] ? ` - ${food.split('-')[2]}` : ''}${food.split('-')[3] ? ` - ${food.split('-')[3]}` : ''}${food.split('-')[4] ? ` - ${food.split('-')[4]}` : ''}` }} /> 
                                  {/* Rating System */}
                                 <div className="rating-system d-flex">
                                   {/* Favorite Icon */}

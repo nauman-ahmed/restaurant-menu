@@ -5,7 +5,7 @@ import { Col, Row } from "reactstrap";
 import { CiDark, CiLight } from "react-icons/ci";  // Theme icons
 import { HiMenuAlt1 } from "react-icons/hi";  // Menu icon
 import { FaEnvelopeOpenText, FaEnvelope } from "react-icons/fa";  // Subscription icons
-import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux'; 
 import LoginModal from './loginModal';
 import SignupModal from './signUpModal';
 import Sidebar from './sidebar';
@@ -25,6 +25,7 @@ export default function Navbar({ page }) {
   const [showSidebar, setShowSidebar] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [theme, setTheme] = useState(document.body.getAttribute('data-theme'));
+  const [tab, setTab] = useState(0);
   
   // Subscription state
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -109,7 +110,7 @@ export default function Navbar({ page }) {
                 </a>
               </li>
               <li className="nav-item">
-                {page || credentials ?
+                {credentials?.role ?
                   <a onClick={() => {
                     dispatch(clearCredentials());
                     navigate('/');
@@ -123,7 +124,7 @@ export default function Navbar({ page }) {
                 }
               </li>
               <li className="nav-item">
-                {page || credentials ? null : 
+                {credentials?.role ? null : 
                   <a onClick={() => setSignUpModal(true)} className="btn btn-singin text-white">
                     Sign Up
                   </a>
@@ -131,7 +132,7 @@ export default function Navbar({ page }) {
               </li>
 
               {/* Subscribe/Unsubscribe button */}
-              {page || credentials ?
+              {credentials?.role && credentials?.role !== "Admin" ?
                 <li className="nav-item">
                   <Button
                     onClick={handleSubscriptionToggle}
@@ -179,7 +180,7 @@ export default function Navbar({ page }) {
           </div>
 
           <div className="nav-item d-flex flex-row gap-2">
-            {page ?
+            {credentials?.role ?
               <a style={{
                 background: '#fc724c',
                 color: 'white',
@@ -187,24 +188,30 @@ export default function Navbar({ page }) {
                 marginLeft: '30px',
                 boxShadow: '0px 8px 9px 0px rgba(96, 94, 94, 0.17)'
               }} onClick={() => {
+                dispatch(clearCredentials());
                 navigate('/');
               }} className="btn">
                 Log Out
               </a>
               :
-              <a style={{
-                background: '#fc724c',
-                color: 'white',
-                padding: '8px 10px',
-                marginLeft: '30px',
-                boxShadow: '0px 8px 9px 0px rgba(96, 94, 94, 0.17)'
-              }} onClick={() => setLoginModal(true)} className="btn">
-                Log In
-              </a>
+              <>
+                <a style={{
+                  background: '#fc724c',
+                  color: 'white',
+                  padding: '8px 10px',
+                  marginLeft: '30px',
+                  boxShadow: '0px 8px 9px 0px rgba(96, 94, 94, 0.17)'
+                }} onClick={() => setLoginModal(true)} className="btn">
+                  Log In
+                </a>
+                <a onClick={() => setSignUpModal(true)} className="btn btn-singin text-white">
+                  Sign Up
+                </a>
+              </>
             }
 
             {/* Subscribe/Unsubscribe button for mobile */}
-            {page &&
+            {/* {page &&
               <Button
                 onClick={handleSubscriptionToggle}
                 color={isSubscribed ? 'danger' : 'success'}
@@ -220,7 +227,7 @@ export default function Navbar({ page }) {
                   </>
                 )}
               </Button>
-            }
+            } */}
 
             <div onClick={toggleTheme} style={{ width: '40px', height: '40px', borderRadius: '100px' }} className='ml-2 cursor-pointer'>
               {theme === 'dark' ?
@@ -232,7 +239,19 @@ export default function Navbar({ page }) {
         </div>
       </nav>
 
-      {showSidebar && <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />}
+      {showSidebar && 
+        <Sidebar 
+          showSidebar={showSidebar} 
+          setShowSidebar={setShowSidebar} 
+          handleSidebarToggle = {handleSidebarToggle}
+          isAnimatingOut = {isAnimatingOut}
+          page = {page}
+          handleSubscriptionToggle = {handleSubscriptionToggle}
+          isSubscribed = {isSubscribed}
+          tab={tab}
+          setTab={setTab}
+        />
+      }
     </>
   );
 }

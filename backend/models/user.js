@@ -19,6 +19,10 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  newsEmail: {
+    type: String,
+    required: true
+  },
   password: {
     type: String,
     required: true
@@ -27,6 +31,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
     default: "Student"
+  },
+  fullName: {
+    type: String,
+    required: true
   },
   isSubscribedToNewsletter: {
     type: Boolean,

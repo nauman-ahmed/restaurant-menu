@@ -17,7 +17,6 @@ const transporter = nodemailer.createTransport({
 
 const sendMenuEmail = async (email, menu) => {
   const menuHtml = formatMenuAsHtml(menu);
-    console.log("ENV", EMAIL_USER, EMAIL_PASS)
   const mailOptions = {
     from: EMAIL_USER,
     to: email,
@@ -27,7 +26,6 @@ const sendMenuEmail = async (email, menu) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`Menu sent to ${email}`);
   } catch (error) {
     console.error(`Error sending email to ${email}: `, error);
   }
@@ -63,11 +61,10 @@ const customMenu = async () => {
         if(subscribedUsers.length){
             // Step 3: Send menu to each subscribed user
             subscribedUsers.forEach(async (user) => {
-                await sendMenuEmail(user.email, menu);
+                await sendMenuEmail(user.newsEmail, menu);
             });
         }
     
-        console.log('Weekly menu email sent to all subscribed users.');
     } catch (error) {
       console.error('Error occurred while sending menu emails: ', error);
     }
@@ -81,7 +78,6 @@ const scrapeMenuData = async () => {
     const url = 'https://www.oxy.edu/student-life/campus-dining/where-eat/marketplace'; // Replace with the actual URL
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
-
     let menu = [];
     let currentDay = null;
 

@@ -522,6 +522,11 @@ button:focus {
 .menuForPages {
   margin-left: 300px;
 }
+
+.sidebarMobile{
+  display: none;
+}
+
 @media (max-width : 991px){
   .navbar-mobile {
     display: block !important;
@@ -531,6 +536,9 @@ button:focus {
   }
   .sidebarPage {
     display: none;
+  }
+  .sidebarMobile{
+    display: block;
   }
   .menuForPages {
     margin-left: unset !important;

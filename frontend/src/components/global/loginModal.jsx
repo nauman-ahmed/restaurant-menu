@@ -18,6 +18,7 @@ export default function LoginModal({ loginModal, setLoginModal }) {
         try {
 
             const { data, status } = await login(email, password);
+
             if(status !== 200){
                 toast.error('Login failed. Try again.');
                 return 
@@ -25,7 +26,9 @@ export default function LoginModal({ loginModal, setLoginModal }) {
 
             dispatch(setCredentials({
                 email: data.email,
+                newsEmail: data.newsEmail,
                 role: data.role,
+                fullName: data.fullName,
                 _id: data._id,
               }));
             if (data.role === 'Student') {

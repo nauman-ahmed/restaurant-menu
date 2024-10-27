@@ -12,7 +12,9 @@ module.exports = {
 
       const user = new User({
         email: args.userInput.email,
-        password: hashedPassword
+        newsEmail: args.userInput.email,
+        password: hashedPassword,
+        fullName: args.userInput.fullName
       });
 
       const result = await user.save();
@@ -24,23 +26,66 @@ module.exports = {
   },
   loginUser: async args => {
     try {
-      // Find the user by email only (not by password)
+
       const existingUser = await User.findOne({ email: args.userInput.email });
       
-      // If user is not found
       if (!existingUser) {
         throw new Error('User does not exist.');
       }
   
-      // Compare the entered password with the hashed password stored in the database
       const isPasswordCorrect = await bcrypt.compare(args.userInput.password, existingUser.password);
       
       if (!isPasswordCorrect) {
         throw new Error('Incorrect password.');
       }
   
-      // Password is correct, return user details, but set password to null
-      return { ...existingUser._doc, password: null, _id: existingUser.id, role: existingUser.role };
+      return { ...existingUser._doc, password: null, _id: existingUser.id, role: existingUser.role, fullName: existingUser.fullName };
+  
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  getAllUsers: async args => {
+    try {
+
+      const existingUser = await User.find({ role: "Student" });
+      return existingUser;
+  
+    } catch (err) {
+      throw err;
+    }
+  },
+  getMe: async args => {
+    try {
+
+      const user = await User.findById(args.userId);
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      return user;
+  
+    } catch (err) {
+      throw err;
+    }
+  },
+  updateMe: async ({ userInput }) => {
+    try {
+
+      const { userId, newsEmail, fullName } = userInput;
+      const user = await User.findOneAndUpdate(
+        { _id: userId }, 
+        { $set: { newsEmail, fullName} },    
+        { new: true, runValidators: true } 
+      );
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      return user;
   
     } catch (err) {
       throw err;

@@ -2,9 +2,9 @@ import { createUserRequestBody, loginUserRequestBody } from "../graphQlSchema/au
 import axios from "axios"
 import { backendUrl } from "../constants"
 
-export const register = async (email, password) => {
+export const register = async (email, password, fullName) => {
     
-    const requestBody = createUserRequestBody(email, password)
+    const requestBody = createUserRequestBody(email, password, fullName)
     const response = await axios.post(
         backendUrl + "/graphql", 
         JSON.stringify(requestBody),
