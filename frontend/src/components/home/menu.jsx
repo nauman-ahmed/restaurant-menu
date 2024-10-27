@@ -28,6 +28,7 @@ export default function Menu({ handleRating, ratings }) {
   const [favorites, setFavorites] = useState([]);
   const [menu, setMenu] = useState(null);
   const [showBanner, setShowBanner] = useState(false);
+  const [getTime, setGetTime] = useState(false);
   const [bannerMessage, setBannerMessage] = useState('');
   const [timing, setTiming] = useState({
     startTimeOne: '',
@@ -45,7 +46,6 @@ export default function Menu({ handleRating, ratings }) {
     const current = new Date();
     const start = new Date(startTime);
     const end = new Date(endTime);
-    console.log("Start", start, end)
     return current >= start && current <= end;
   };
 
@@ -57,23 +57,29 @@ export default function Menu({ handleRating, ratings }) {
       const isEveningBannerTime = isWithinTimeRange(timing.endTimeOne, timing.endTimeTwo);
 
       if (isMorningBannerTime) {
-        setShowBanner(true);
-        setBannerMessage(`The Cafeteria is about to open untill ${getHHMM(timing.startTimeTwo)}`);
+        if(!showBanner){
+          setShowBanner(true);
+          setBannerMessage(`The Cafeteria is about to open untill ${getHHMM(timing.startTimeTwo)}`);
+        }
       } else if (isEveningBannerTime) {
-        setShowBanner(true);
-        setBannerMessage(`The Cafeteria is about to close at ${getHHMM(timing.endTimeTwo)}`);
+        if(!showBanner){
+          setShowBanner(true);
+          setBannerMessage(`The Cafeteria is about to close at ${getHHMM(timing.endTimeTwo)}`);
+        }
       } else {
-        setShowBanner(false); // Hide banner outside of those times
+        if(showBanner){
+          setShowBanner(false);
+         }
       }
     };
 
     // Initial check and set interval to check every minute
     checkTimeForBanner();
     gatBannerTimingHandler()
-    const intervalId = setInterval(checkTimeForBanner, 60000); // Check every minute
+    const intervalId = setInterval(checkTimeForBanner, 1000); // Check every minute
 
     return () => clearInterval(intervalId); // Clean up on component unmount
-  }, []);
+  }, [timing]);
 
   const handleNextDay = () => {
     setOpenMenu(0);
