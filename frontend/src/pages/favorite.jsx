@@ -26,7 +26,7 @@ const FavoriteTab = ({ ratings }) => {
                     <Table bordered hover responsive>
                         <thead>
                         <tr>
-                            <th>S.no</th>
+                            <th>No.</th>
                             <th>Food Name</th>
                             <th>Ratings</th>
                         </tr>

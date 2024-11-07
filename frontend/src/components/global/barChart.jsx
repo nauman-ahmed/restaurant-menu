@@ -42,10 +42,13 @@ const BarChart = ({ chartData, min, max, title, yTitle, xTitle }) => {
         title: {
           display: true,
           text: xTitle,
+          padding: { top: 20 }, // Add padding above the x-axis title
         },
         ticks: {
-          maxRotation: 90, // Rotate labels to be vertical
-          minRotation: 90, // Minimum rotation is 90 degrees (vertical)
+          maxRotation: 45,
+          minRotation: 45,
+          align: 'end', // Align labels to the end for more space
+          padding: 10, // Add padding around the labels
         },
       },
     },

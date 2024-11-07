@@ -166,8 +166,8 @@ export default function Menu({ handleRating, ratings }) {
       menu?.forEach(mainobj => {
         mainobj.data.forEach(mealObj => {
           mealObj.foods.forEach(item => {
-            // Split the item into an array of words before applying some()
-            if (item.toLowerCase().startsWith(searchText?.toLowerCase())) {
+            console.log("Dialog", item)
+            if (item.toLowerCase().includes(searchText?.toLowerCase())) {
               searchingData.push({
                 date: mainobj.date + ' | ' + mainobj.day,
                 meal: mealObj.meal,
@@ -300,7 +300,7 @@ export default function Menu({ handleRating, ratings }) {
                           <ul className="bg-lightorange p-3 border-circular" style={{ paddingLeft: '20px', marginBottom: '15px' }}>
                             {foodInfo.foods?.map((food, foodIndex) => (
                               <li key={foodIndex} style={{ fontSize: '16px', display: "flex !important", alignItems: "start !important" }} className="d-flex align-items-center justify-content-between">
-                                <span style={{ width: "60%" }} dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}` }}></span>
+                                <span style={showFavorites ? { width: "60%" } : { width: "100%" }} dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}` }}></span>
                                 {/* Rating System */}
                                 <div className="rating-system d-flex">
                                   {/* Favorite Icon */}
@@ -360,7 +360,7 @@ export default function Menu({ handleRating, ratings }) {
                               <li key={foodIndex} style={{ fontSize: '16px', display: "flex !important", alignItems: "start !important" }}
                               className="d-flex align-items-center justify-content-between"
                               >
-                                <span style={{ width: "60%" }} dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}${food.split('-')[2] ? ` - ${food.split('-')[2]}` : ''}${food.split('-')[3] ? ` - ${food.split('-')[3]}` : ''}${food.split('-')[4] ? ` - ${food.split('-')[4]}` : ''}` }} /> 
+                                <span style={showFavorites ? { width: "60%" } : { width: "100%" }} dangerouslySetInnerHTML={{ __html: `○ <b>${food.split('-')[0]}</b>${food.split('-')[1] ? ` - ${food.split('-')[1]}` : ''}${food.split('-')[2] ? ` - ${food.split('-')[2]}` : ''}${food.split('-')[3] ? ` - ${food.split('-')[3]}` : ''}${food.split('-')[4] ? ` - ${food.split('-')[4]}` : ''}` }} /> 
                                  {/* Rating System */}
                                 <div className="rating-system d-flex">
                                   {/* Favorite Icon */}

@@ -38,7 +38,7 @@ const RatingInsight = ({ title, data, maxCount }) => {
   return (
     <div>
       <h2 className='ml-2'>{title}</h2>
-      <div style={{ width: '80%', margin: '0 auto' }}>
+      <div style={{ width: '80%', margin: '0 auto', height: "100vh" }}>
         {chartData && <BarChart 
             chartData={chartData}
             min={0}
