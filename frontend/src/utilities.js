@@ -1,5 +1,13 @@
 export const getFoodNames = (favorites) => favorites.map(favorite => favorite.name)
 
+export const formatDate = (date) => {
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+};
+
 export const getRatingsObj = (ratings) => {
     let arr = {}; 
 

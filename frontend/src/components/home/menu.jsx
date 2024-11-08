@@ -1,23 +1,27 @@
 import { useEffect, useState } from "react";
-import { useSelector } from 'react-redux'; 
+import { useSelector, useDispatch } from 'react-redux'; 
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { FaChevronDown, FaChevronUp, FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa6";  // Import star icons
 import dayjs from "dayjs";
 import axios from "axios";
 import { toast } from 'react-toastify';
 import { addFavorite, getUserFavorite, removeFavorite } from "../../APIs/favourite";
-import { getFoodNames, getHH, getHHMM, getMM } from "../../utilities";
+import { getFoodNames, formatDate } from "../../utilities";
 import { getBannerTiming } from "../../APIs/banner"
+import { scrapeMenus, fetchMenus } from '../../store/menuSlice';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Staurday', 'Sunday'];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Novemer', 'December'];
+const dayToFetch = 5
 
 export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsHandler }) {
 
   const credentials = useSelector((state) => state.credentials.credentials);
-  
+  const dispatch = useDispatch();
+  const { loading, menus, error } = useSelector((state) => state.menus);
+
   const [duration, setDuration] = useState('day');
   const [dataIndex, setDataIndex] = useState(0);
   const [openMenu, setOpenMenu] = useState(0);
@@ -120,6 +124,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
 
   const getUserFavoriteHandler = async () => {
     try {
+      
       const { data, status } = await getUserFavorite();
       setFavorites(getFoodNames(data));
       
@@ -128,16 +133,22 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
     } 
   };
 
-  
 
-  const getData = async () => {
-    await axios.get(backendUrl + '/scrape').then(res => { 
-    localStorage.setItem('menuData', JSON.stringify(res.data));
-      const index = res.data.findIndex(obj => obj.date.split(' ')[1] == new Date().getDate());
+  useEffect(() => {
+    
+    if(new Date().getDay() === dayToFetch){
+      dispatch(scrapeMenus());
+    }else{
+      dispatch(fetchMenus());
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if(menus.length){
+      const index = menus.findIndex(obj => new Date(obj.date).getDate() == new Date().getDate());
       setDataIndex(index == -1 ? 6 : index);
-      setMenu(res.data);
-    }).catch(err => console.log(err));
-  };
+    }
+  }, [menus]);
 
   useEffect(() => {
     
@@ -145,19 +156,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
       setShowFavorites(true);
       getUserFavoriteHandler();
     } 
-    localStorage.removeItem('menuData')
-    if (localStorage.getItem('menuData')) {
-      const menuData = JSON.parse(localStorage.getItem('menuData'));
-      if (menuData?.some(obj => obj.date.includes(months[new Date().getMonth()])) && menuData?.some(obj => obj.date.split(' ')[1] === new Date().getDate)) {
-        const index = menuData.findIndex(obj => obj.date.split(' ')[1] == new Date().getDate());
-        setDataIndex(index);
-        setMenu(localStorage.getItem('menuData') && JSON.parse(localStorage.getItem('menuData')));
-      } else {
-        getData();
-      }
-    } else {
-      getData();
-    }
+
   }, []);
 
   const applySearch = () => {
@@ -166,7 +165,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
       setDuration('');
       const searchingData = [];
       
-      menu?.forEach(mainobj => {
+      menus?.forEach(mainobj => {
         mainobj.data.forEach(mealObj => {
           mealObj.foods.forEach(item => {
             if (item.toLowerCase().includes(searchText?.toLowerCase())) {
@@ -212,7 +211,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
           </div>
         </div>
 
-        {menu ? (
+        {menus ? (
           <>
             <div className=" w-100 d-flex flex-col gap-2 border  p-2 border-circular">
               <div className="d-flex justify-content-end mt-2 mb-4 w-100">
@@ -282,16 +281,16 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                       </div>
                     )}
                     <div className="theme-color" style={{ minWidth: '70%', textAlign: "center", fontSize: '20px' }}>
-                      {menu[dataIndex]?.date}, {dayjs().format('YYYY')} | {menu[dataIndex]?.day}
+                      {menus[dataIndex]?.date}, {dayjs().format('YYYY')} | {menus[dataIndex]?.day}
                     </div>
-                    {dataIndex < menu.length - 1 && (
+                    {dataIndex < menus.length - 1 && (
                       <div onClick={handleNextDay} style={{ width: '40px', height: '40px', borderRadius: '100%' }} className=" bg-orange d-flex justify-content-center align-items-center cursor-pointer ">
                         <FiChevronRight style={{ fontSize: '25px' }} className="text-white" />
                       </div>
                     )}
                   </div>
                   <div style={{ maxWidth: '700px', width: '100%' }} className=" my-5 text text-black mx-auto">
-                    {menu[dataIndex]?.data?.map((foodInfo, index) => (
+                    {menus[dataIndex]?.data?.map((foodInfo, index) => (
                       <>
                         <div key={index} onClick={() => setOpenMenu(openMenu === index ? null : index)} className={`w-100 d-flex cursor-pointer justify-content-between border-circular ${openMenu === index ? 'bg-orange text-white' : 'bg-lightdark text-black'} align-items-center p-2 border-bottom border-secondary`}>
                           <p className={`${openMenu === index ? 'text-white fs-20' : 'text-black'} text `}>{foodInfo.meal}</p>
@@ -334,7 +333,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
               {duration === 'week' && (
                 <>
                   <div style={{ gap: '20px', }} className="w-100 mt-5 d-flex justify-content-center flex-wrap align-items-center flex-row">
-                    {menu.map((obj, index) => (
+                    {menus?.map((obj, index) => (
                       <div style={{ borderRadius: '40px', }} onClick={() => {
                         setOpenMenu(0)
                         setDataIndex(index)
@@ -345,7 +344,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
 
                   </div>
                   <div style={{ maxWidth: '700px', width: '100%' }} className=" my-5 text text-black mx-auto">
-                    {menu[dataIndex].data?.map((foodInfo, index) => (
+                    {menus[dataIndex].data?.map((foodInfo, index) => (
                       <>
                         <div key={index} onClick={() => {
                           setOpenMenu(openMenu === index ? null : index)

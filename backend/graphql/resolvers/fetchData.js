@@ -75,65 +75,73 @@ cron.schedule('0 8 * * 4', async () => {
     await customMenu()
 });
   
-const scrapeMenuData = async () => {
-    const url = 'https://www.oxy.edu/student-life/campus-dining/where-eat/marketplace'; 
-
-    const { data } = await axios.get(url);
-    const $ = cheerio.load(data);
-    let menu = [];
-    let currentDay = null;
-
-    $('p').each((i, element) => {
-      const dayTag = $(element).find('u strong'); // Target day
-      const mealTag = $(element).find('strong').first(); // Target meal
-
-      // Check if it's a day heading
-      if (dayTag.length) {
-        if (currentDay) {
-          menu.push(currentDay); // Save the previous day's data
-        }
-
-        // Extract the day name and date
-        const dayText = dayTag.text().trim().split(','); // Splitting by ',' to get the day and date
-        currentDay = {
-          day: dayText[0].trim(), // E.g., "Sunday"
-          date: dayText[1]?.trim()+", "+dayText[2]?.trim(), // E.g., "September 22, 2024"
-          data: []
-        };
-      }
-
-      // Check if it's a meal heading
-      if (!dayTag.length && mealTag.length && mealTag.text().match(/\d/)) {
-        const mealName = mealTag.text().trim(); // Extract meal name
-        const foodItems = $(element).html().split('<br>').map(item => item.trim()).filter(item => item && !item.includes(mealName));
-
-        // Create a meal object
-        const currentMeal = {
-          meal: mealName,
-          foods: foodItems
-        };
-
-        currentDay?.data.push(currentMeal); 
-      }
-    });
-
-    if (currentDay) {
-      menu.push(currentDay);
-    }
-
-    for (const day of menu) {
-      const existingDay = await MenuModal.findOne({ date: day.date });
+const scrapeMenuData = async (req) => {
   
-      if (!existingDay) {
-        const newDay = new MenuModal(day);
-        await newDay.save();
-        console.log(`Saved menu for ${day.day}, ${day.date}`);
-      } else {
-        console.log(`Menu for ${day.day}, ${day.date} already exists in the database.`);
+    const { date } = req.query;
+    const existingDay = await MenuModal.findOne({ date: date });
+
+    if(date && existingDay){
+      const menus = await MenuModal.find({});
+      return menus
+    }else{
+
+      const url = 'https://www.oxy.edu/student-life/campus-dining/where-eat/marketplace'; 
+
+      const { data } = await axios.get(url);
+      const $ = cheerio.load(data);
+      let menu = [];
+      let currentDay = null;
+  
+      $('p').each((i, element) => {
+        const dayTag = $(element).find('u strong'); 
+        const mealTag = $(element).find('strong').first(); 
+  
+        if (dayTag.length) {
+          if (currentDay) {
+            menu.push(currentDay); 
+          }
+  
+          const dayText = dayTag.text().trim().split(','); 
+          currentDay = {
+            day: dayText[0].trim(), 
+            date: dayText[1]?.trim()+", "+dayText[2]?.trim(), 
+            data: []
+          };
+        }
+  
+        if (!dayTag.length && mealTag.length && mealTag.text().match(/\d/)) {
+          const mealName = mealTag.text().trim(); 
+          const foodItems = $(element).html().split('<br>').map(item => item.trim()).filter(item => item && !item.includes(mealName));
+  
+          const currentMeal = {
+            meal: mealName,
+            foods: foodItems
+          };
+  
+          currentDay?.data.push(currentMeal); 
+        }
+      });
+  
+      if (currentDay) {
+        menu.push(currentDay);
       }
+  
+      for (const day of menu) {
+        const existingDay = await MenuModal.findOne({ date: day.date });
+    
+        if (!existingDay) {
+          const newDay = new MenuModal(day);
+          await newDay.save();
+          console.log(`Saved menu for ${day.day}, ${day.date}`);
+        } else {
+          console.log(`Menu for ${day.day}, ${day.date} already exists in the database.`);
+        }
+      }
+
+      return menu;
+
     }
 
-    return menu;
 };
 
 module.exports = {scrapeMenuData, customMenu};

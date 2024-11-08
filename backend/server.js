@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 app.get('/scrape', async (req, res) => {
   try {
-    res.json(await scrapeMenuData()); 
+    res.json(await scrapeMenuData(req)); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Error occurred while scraping the website');
