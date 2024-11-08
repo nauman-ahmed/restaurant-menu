@@ -10,6 +10,7 @@ import BannerTime from "./banner";
 
 export default function Admin() {
   
+    const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing'];
     const currentTab = useSelector((state) => state.sideBarTabs.currentTab);
     const credentials = useSelector((state) => state.credentials.credentials);
     const navigate = useNavigate()
@@ -148,18 +149,11 @@ export default function Admin() {
                         }} className=" my-1 mb-3 cursor-pointer w-100  text text-black border-circular">
                             Admin Dashboard
                         </div>
-                        <div onClick={() => setTab(0)} className={`cursor-pointer w-100 p-2 ${tab === 0 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
-                            ⦿ Dashboard
-                        </div>
-                        <div onClick={() => setTab(1)} className={`cursor-pointer w-100 p-2 ${tab === 1 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
-                            ⦿ Rating Insights
-                        </div>
-                        <div onClick={() => setTab(2)} className={`cursor-pointer w-100 p-2 ${tab === 2 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
-                            ⦿ Favorite Insights
-                        </div>
-                        <div onClick={() => setTab(3)} className={`cursor-pointer w-100 p-2 ${tab === 3 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
-                            ⦿ Banner Timing
-                        </div>
+                        {adminItems.map((item, index) => 
+                            <div onClick={() => setTab(index)} className={`cursor-pointer w-100 p-2 ${tab === index ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
+                                ⦿ {item}
+                            </div>
+                        )}
 
                     </div>
                 </div>
