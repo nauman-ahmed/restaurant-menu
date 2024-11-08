@@ -5,18 +5,21 @@ import { FaEnvelopeOpenText, FaEnvelope } from "react-icons/fa";
 import { Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentTab } from "../../store/sidebarTabsSlice";
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar({
   showSidebar,
   isAnimatingOut,
   handleSidebarToggle,
   page,
-  handleSubscriptionToggle,
-  isSubscribed,
+  // handleSubscriptionToggle,
+  // isSubscribed,
   tab,
   setTab
 }) {
 
+  const navigate = useNavigate();
+  
   const dispatch = useDispatch();
   const credentials = useSelector((state) => state.credentials.credentials);
   const location = useLocation();
@@ -25,7 +28,7 @@ export default function Sidebar({
   // Create a ref to track the sidebar element
   const sidebarRef = useRef(null);
 
-  const menuItems = ['Menu', 'About Us'];
+  const menuItems = [{name: "Menu", route:"/"}, {name: "FAQ", route: "/faq"}];
   const studentItems = ['Student Dashboard', "Favorite Items", "User Preferences", "Newsletter", "Feedback Form"];
   const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing'];
 
@@ -58,7 +61,7 @@ export default function Sidebar({
       ${showSidebar && !isAnimatingOut ? "animate__animated animate__slideInLeft animate__faster" : ""}
       ${isAnimatingOut ? "animate__animated animate__slideOutLeft animate__faster" : ""}`}>
       <div className="d-flex flex-col align-items-center mx-3">
-        {path === '/' && (
+        {path === '/' || path === '/faq' ? (
           <>
             <div style={{ fontSize: '22px' }} 
               className="my-1 mb-3 cursor-pointer w-100 d-flex justify-content-between text text-black border-circular">
@@ -69,13 +72,13 @@ export default function Sidebar({
             </div>
             {menuItems.map((item, index) => (
               <div key={index} 
-                onClick={() => currentTabHandler(index)} 
+                onClick={() => navigate(item.route)} 
                 className={`cursor-pointer w-100 p-2 ${tab === index ? 'bg-orange text-white' : 'text-black'} text border-circular`}>
-                ⦿ {item}
+                ⦿ {item.name}
               </div>
             ))}
           </>
-        )}
+        ):null}
         {path === '/student' && (
           <>
             <div style={{ fontSize: '22px' }} 
@@ -91,7 +94,7 @@ export default function Sidebar({
                 ⦿ {item}
               </div>
             ))}
-            {page && (
+            {/* {page && (
               <Button onClick={handleSubscriptionToggle} 
                 color={isSubscribed ? 'danger' : 'success'} 
                 className="w-100 navbar-mobile">
@@ -105,7 +108,7 @@ export default function Sidebar({
                   </>
                 )}
               </Button>
-            )}
+            )} */}
           </>
         )}
         {path === '/admin' && (

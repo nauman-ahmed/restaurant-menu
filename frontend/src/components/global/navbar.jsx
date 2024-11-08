@@ -21,7 +21,6 @@ export default function Navbar({ page }) {
   const [signUpModal, setSignUpModal] = useState(false);
   const navigate = useNavigate();
   const [path, setPath] = useState("");
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [showSidebar, setShowSidebar] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [theme, setTheme] = useState(document.body.getAttribute('data-theme'));
@@ -104,8 +103,8 @@ export default function Navbar({ page }) {
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link page-scroll cursor-pointer">
-                  About Us
+                <a className="nav-link page-scroll cursor-pointer" onClick={() => navigate('/faq')}>
+                  FAQ
                 </a>
               </li>
               <li className="nav-item">
@@ -244,8 +243,8 @@ export default function Navbar({ page }) {
           handleSidebarToggle = {handleSidebarToggle}
           isAnimatingOut = {isAnimatingOut}
           page = {page}
-          handleSubscriptionToggle = {handleSubscriptionToggle}
-          isSubscribed = {isSubscribed}
+          // handleSubscriptionToggle = {handleSubscriptionToggle}
+          // isSubscribed = {isSubscribed}
           tab={tab}
           setTab={setTab}
         />

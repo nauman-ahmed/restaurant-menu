@@ -10,7 +10,9 @@ export const updateBannerRequestBody = (bannerId = "671d4568cdc7544cd62b0a29", t
               startTimeOne: "${timing.startTimeOne}", 
               endTimeOne: "${timing.endTimeOne}",
               startTimeTwo: "${timing.startTimeTwo}", 
-              endTimeTwo: "${timing.endTimeTwo}"
+              endTimeTwo: "${timing.endTimeTwo}",
+              startTimeText: "${timing.startTimeText}",
+              endTimeText: "${timing.endTimeText}",
             }) {
             _id,
             startTimeOne, 
@@ -33,7 +35,9 @@ export const getBannerRequestBody = (bannerId = "671d4568cdc7544cd62b0a29") => {
           startTimeOne, 
             endTimeOne,
             startTimeTwo, 
-            endTimeTwo
+            endTimeTwo,
+            startTimeText,
+            endTimeText,
         }
       }
       `

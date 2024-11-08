@@ -5,13 +5,17 @@ import Navbar from "../components/global/navbar";
 import { useNavigate } from "react-router-dom";
 import { getRatingsInArray, getCleanText } from '../utilities';
 import { FaSortAmountDown, FaSortAmountUp, FaClock } from 'react-icons/fa';  // Importing icons
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
 const FavoriteTab = ({ ratings }) => {
     const credentials = useSelector((state) => state.credentials.credentials);
     const navigate = useNavigate();
     const [foodData, setFoodData] = useState(getRatingsInArray(ratings));
     const [foodDataShow, setFoodDataShow] = useState(getRatingsInArray(ratings));
-    const [sortType, setSortType] = useState(null);
+    const [sortType, setSortType] = useState('Ascending Order');
+    const [dropdownOpen, setDropdownOpen] = useState(false); // For dropdown toggle
+
+    const toggleDropdown = () => setDropdownOpen(prevState => !prevState); // Toggle dropdown open/close
 
     useEffect(() => {
         if (credentials?.role !== 'Student') {
@@ -19,7 +23,6 @@ const FavoriteTab = ({ ratings }) => {
         }
     }, [credentials, navigate]);
 
-    // Sorting functions
     const sortByMostRecentFavorited = (data) => {
         return [data[data.length-1]];
     };
@@ -36,7 +39,7 @@ const FavoriteTab = ({ ratings }) => {
     const sortData = (data, sortBy) => {
         switch (sortBy) {
             case 'mostRecent':
-                return sortByMostRecentFavorited(foodData);
+                return sortByMostRecentFavorited(data);
             case 'ratingDesc':
                 return sortByRatingDesc(data);
             case 'ratingAsc':
@@ -47,8 +50,8 @@ const FavoriteTab = ({ ratings }) => {
     };
 
     // Handle sorting action
-    const handleSort = (sortBy) => {
-        setSortType(sortBy);
+    const handleSort = (sortBy, sortName) => {
+        setSortType(sortName);
         setFoodDataShow(sortData(foodData, sortBy));
     };
 
@@ -56,8 +59,19 @@ const FavoriteTab = ({ ratings }) => {
         <div>
             <Navbar />
             <h2 className="text-center my-4">Food Ratings</h2>
-            
-            {/* Sorting Buttons */}
+            <div className="d-flex justify-content-end mb-3">
+                <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                    <DropdownToggle caret className="bg-orange text-white">
+                        {sortType}
+                    </DropdownToggle>
+                    <DropdownMenu>
+                        <DropdownItem onClick={() => handleSort("mostRecent", "Most Recent")}>Most Recent</DropdownItem>
+                        <DropdownItem onClick={() => handleSort("ratingDesc", "Descending Order")}>Descending Order</DropdownItem>
+                        <DropdownItem onClick={() => handleSort("ratingAsc", "Ascending Order")}>Ascending Order</DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+            {/* Sorting Buttons
             <div className="d-flex justify-content-center mb-3">
                 <Button color="primary" className="mx-2" onClick={() => handleSort('mostRecent')}>
                     <FaClock /> Most Recent
@@ -68,7 +82,7 @@ const FavoriteTab = ({ ratings }) => {
                 <Button color="primary" className="mx-2" onClick={() => handleSort('ratingAsc')}>
                     <FaSortAmountUp /> Rating (Low to High)
                 </Button>
-            </div>
+            </div> */}
 
             {/* Ratings Table */}
             <Table bordered hover responsive>

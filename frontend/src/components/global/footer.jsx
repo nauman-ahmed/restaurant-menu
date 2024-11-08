@@ -23,7 +23,7 @@ export default function Footer() {
                   {/* <h3 className="block-title">Restaurant</h3> */}
                   <ul className="menu">
                     <li>
-                      <a href="#"> - About Us</a>
+                      <a href="/faq"> - FAQ</a>
                     </li>
                     <li>
                       <a href="#">- Admissions & Aids</a>

@@ -42,13 +42,18 @@ const BarChart = ({ chartData, min, max, title, yTitle, xTitle }) => {
         title: {
           display: true,
           text: xTitle,
-          padding: { top: 20 }, // Add padding above the x-axis title
+          padding: { top: 20 }, 
         },
         ticks: {
-          maxRotation: 45,
-          minRotation: 45,
-          align: 'end', // Align labels to the end for more space
-          padding: 10, // Add padding around the labels
+          callback: function(value) {
+            const label = this.getLabelForValue(value);
+            console.log("Label", label)
+            return label.length > 30 ? label.substr(0, 30) + '...' : label;
+        },
+          maxRotation: 90,
+          minRotation: 90,
+          align: 'end', 
+          padding: 10, 
         },
       },
     },
@@ -60,9 +65,7 @@ const BarChart = ({ chartData, min, max, title, yTitle, xTitle }) => {
 
   return (
     <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}> 
-      {/* Add max-width for larger screens, and allow full width for mobile */}
       <div style={{ position: 'relative', height: '400px' }}>
-        {/* Set a height for the chart to ensure it doesn't collapse */}
         <Bar data={chartData} options={options} />
       </div>
     </div>

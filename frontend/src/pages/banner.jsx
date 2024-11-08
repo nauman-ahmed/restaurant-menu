@@ -9,7 +9,9 @@ const BannerTime = ({ title }) => {
     startTimeOne: '',
     endTimeOne: '',
     startTimeTwo: '',
-    endTimeTwo: ''
+    endTimeTwo: '',
+    startTimeText: '',
+    endTimeText: ''
   });
   
 
@@ -100,6 +102,40 @@ const BannerTime = ({ title }) => {
                 name="endTimeTwo"
                 className='searchInput border-circular w-100 bg-white'
                 onChange={(e) => setTiming({...timing, [e.target.name]: completeDate(e.target.value)})}
+                required
+            />
+        </Col>
+    </Row>
+    <Row>
+        <Col xs='6' className='my-2'>
+            <div style={{
+                fontSize: '16px',
+                color: 'gray'
+            }} className="label theme-color">
+                Start Time Text
+            </div>
+            <input
+                value= {timing.startTimeText}
+                type="text"
+                name="startTimeText"
+                className='searchInput border-circular w-100 bg-white'
+                onChange={(e) => setTiming({...timing, [e.target.name]: e.target.value})}
+                required
+            />
+        </Col>
+        <Col xs='6' className='my-2'>
+            <div style={{
+                fontSize: '16px',
+                color: 'gray'
+            }} className="label theme-color">
+                End Time Text
+            </div>
+            <input
+                value= {timing.endTimeText}
+                type="text"
+                name="endTimeText"
+                className='searchInput border-circular w-100 bg-white'
+                onChange={(e) => setTiming({...timing, [e.target.name]: e.target.value})}
                 required
             />
         </Col>

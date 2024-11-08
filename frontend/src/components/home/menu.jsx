@@ -34,7 +34,9 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
     startTimeOne: '',
     endTimeOne: '',
     startTimeTwo: '',
-    endTimeTwo: ''
+    endTimeTwo: '',
+    startTimeText: '',
+    endTimeText: ''
   });
   
   const gatBannerTimingHandler = async () => {
@@ -59,12 +61,12 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
       if (isMorningBannerTime) {
         if(!showBanner){
           setShowBanner(true);
-          setBannerMessage(`The Cafeteria is about to open untill ${getHHMM(timing.startTimeTwo)}`);
+          setBannerMessage(timing.startTimeText);
         }
       } else if (isEveningBannerTime) {
         if(!showBanner){
           setShowBanner(true);
-          setBannerMessage(`The Cafeteria is about to close at ${getHHMM(timing.endTimeTwo)}`);
+          setBannerMessage(timing.endTimeText);
         }
       } else {
         if(showBanner){
