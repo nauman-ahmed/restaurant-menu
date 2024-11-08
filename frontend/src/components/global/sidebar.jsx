@@ -26,7 +26,7 @@ export default function Sidebar({
   const sidebarRef = useRef(null);
 
   const menuItems = ['Menu', 'About Us'];
-  const studentItems = ['Student Dashboard', "Favorite Items"];
+  const studentItems = ['Student Dashboard', "Favorite Items", "User Preferences", "Newsletter", "Feedback Form"];
   const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing'];
 
   const currentTabHandler = (index) => {
@@ -86,6 +86,7 @@ export default function Sidebar({
             {studentItems.map((item, index) => (
               <div key={index} 
                 onClick={() => currentTabHandler(index)} 
+                style={{ fontWeight: "bold" }}
                 className={`cursor-pointer w-100 p-2 mb-2 ${tab === index ? 'bg-orange text-white' : 'text-black'} text border-circular`}>
                 ⦿ {item}
               </div>

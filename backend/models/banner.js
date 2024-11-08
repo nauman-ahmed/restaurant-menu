@@ -18,6 +18,14 @@ const bannerSchema = new Schema({
     type: String,
     required: true
   },
+  startTimeText: {
+    type: String,
+    required: true
+  },
+  endTimeText: {
+    type: String,
+    required: true
+  }
 });
 
 module.exports = mongoose.model('BannerTime', bannerSchema);

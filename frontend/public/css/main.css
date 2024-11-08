@@ -660,6 +660,12 @@ button:focus {
   color: red;
 }
 
+.news-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  position: relative;
+  color: black;
+}
 .hero-area .overlay {
   position: absolute;
   width: 100%;

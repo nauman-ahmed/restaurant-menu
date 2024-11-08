@@ -7,7 +7,15 @@ module.exports = {
 
     const banner = await BannerTime.findOneAndUpdate(
       { _id: args.banner.bannerId }, 
-      { $set: { startTimeOne: args.banner.startTimeOne, startTimeTwo: args.banner.startTimeTwo, endTimeOne: args.banner.endTimeOne, endTimeTwo: args.banner.endTimeTwo} },    
+      { $set: { 
+        startTimeOne: args.banner.startTimeOne, 
+        startTimeTwo: args.banner.startTimeTwo, 
+        endTimeOne: args.banner.endTimeOne, 
+        endTimeTwo: args.banner.endTimeTwo,
+        startTimeText: args.banner.startTimeText,
+        endTimeText: args.banner.endTimeText,
+      } 
+      },    
       { new: true, runValidators: true } 
     );
     

@@ -1,6 +1,6 @@
 const User = require('../../models/user'); // Assuming a User model with MongoDB
 const mongoose = require('mongoose');
-
+const getCleanText  = require("../../utilities")
 module.exports = {
   userFavorites: async (args) => {
     try {
@@ -23,8 +23,15 @@ module.exports = {
         throw new Error('User not found');
       }
       
+      const cleanedText = getCleanText(menuItemInput.name)
+
       const newFavorite = { _id: new mongoose.Types.ObjectId(), name: menuItemInput.name, description: menuItemInput.description };
       user.favorites.push(newFavorite); // Add the new favorite menu item to the user's favorites list
+
+      const hasRating = user.ratings.some(rating => rating.name === cleanedText);
+      if (!hasRating) {
+        user.ratings.push({ name: cleanedText, rating: 0 });
+      }
       await user.save();
       
       return user;

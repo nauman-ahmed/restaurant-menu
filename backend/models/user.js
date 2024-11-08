@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const menuItemSchema = new mongoose.Schema({
+const menuItemSchema = new Schema({
   name: { type: String, required: true },
   description: { type: String },
 });
 
-const ratingSchema = new mongoose.Schema({
+const ratingSchema = new Schema({
   name: { type: String, required: true },
   rating: {
     type: Number,

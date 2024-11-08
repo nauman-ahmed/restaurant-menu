@@ -13,7 +13,10 @@ type Banner {
   startTimeOne: String!
   startTimeTwo: String!
   endTimeOne: String!
-  endTimeTwo: String!}
+  endTimeTwo: String!
+  startTimeText: String!  
+  endTimeText: String!    
+}
 
 type MenuItem {
   _id: ID!
@@ -68,35 +71,88 @@ input BannerTimeInput {
   startTimeTwo: String!
   endTimeOne: String!
   endTimeTwo: String!
+  startTimeText: String! 
+  endTimeText: String!   
+}
+
+type Meal {
+  meal: String!
+  foods: [String!]!
+}
+
+type Day {
+  _id: ID!
+  day: String!
+  date: String!
+  data: [Meal!]!
+}
+
+input MealInput {
+  meal: String!
+  foods: [String!]!
+}
+
+input DayInput {
+  day: String!
+  date: String!
+  data: [MealInput!]!
+}
+
+type Text {
+  _id: ID!
+  content: String!
+  createdAt: String!
+  userId: User!
+}
+
+input TextInput {
+  content: String!
+  userId: String!
 }
 
 type RootQuery {
-    getAllUsers: [User!]!
-    getMe(userId: ID!): User! 
 
-    userFavorites(userId: ID!): [MenuItem!]! 
+  getAllMenus: [Day!]!
+  getMenuByDay(day: String!): Day
+  getMenuByDate(date: String!): Day
 
-    userRatings(userId: ID!): [Ratings!]! 
+  getAllUsers: [User!]!
+  getMe(userId: ID!): User! 
 
-    getSubscription(userId: ID!): User! 
+  userFavorites(userId: ID!): [MenuItem!]! 
 
-    getBannerTiming(bannerId: ID!): Banner! 
+  userRatings(userId: ID!): [Ratings!]! 
+
+  getSubscription(userId: ID!): User! 
+
+  getBannerTiming(bannerId: ID!): Banner! 
+
+  getAllTexts: [Text!]!
+  getTextById(id: ID!): Text
+
 }
 
 type RootMutation {
-    createUser(userInput: UserInput): User
-    loginUser(userInput: UserCredentials): User
-    updateMe(userInput: UserUpdateInput): User
 
-    addFavorite(userId: ID!, menuItemInput: MenuItemInput): User 
-    removeFavorite(userId: ID!, menuItemName: String!): User 
-    
-    rateFavoriteMenuItem(rateMenuItemInput: RateMenuItemInput): User 
-    
-    subscribeToNewsletter(userId: ID!): User
-    unsubscribeFromNewsletter(userId: ID!): User
+  createUser(userInput: UserInput): User
+  loginUser(userInput: UserCredentials): User
+  updateMe(userInput: UserUpdateInput): User
 
-    updateBannerTime(banner: BannerTimeInput): Banner
+  addFavorite(userId: ID!, menuItemInput: MenuItemInput): User 
+  removeFavorite(userId: ID!, menuItemName: String!): User 
+  
+  rateFavoriteMenuItem(rateMenuItemInput: RateMenuItemInput): User 
+  
+  subscribeToNewsletter(userId: ID!): User
+  unsubscribeFromNewsletter(userId: ID!): User
+
+  updateBannerTime(banner: BannerTimeInput): Banner
+
+  createMenu(dayInput: DayInput): Day
+  updateMeal(dayId: ID!, meal: String!, mealInput: MealInput): Day
+
+  createText(textInput: TextInput): Text
+  
 }
 
 schema {

@@ -3,6 +3,7 @@ const cheerio = require('cheerio');
 const cron = require('node-cron');
 const { getAllSubscription } = require("../resolvers/subscription")
 const nodemailer = require('nodemailer');
+const MenuModal = require("../../models/menu");
 
 const EMAIL_PASS = "vils yuht uyla xrov"
 const EMAIL_USER = "naumanahmed449@gmail.com"
@@ -75,7 +76,8 @@ cron.schedule('0 8 * * 4', async () => {
 });
   
 const scrapeMenuData = async () => {
-    const url = 'https://www.oxy.edu/student-life/campus-dining/where-eat/marketplace'; // Replace with the actual URL
+    const url = 'https://www.oxy.edu/student-life/campus-dining/where-eat/marketplace'; 
+
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
     let menu = [];
@@ -95,7 +97,7 @@ const scrapeMenuData = async () => {
         const dayText = dayTag.text().trim().split(','); // Splitting by ',' to get the day and date
         currentDay = {
           day: dayText[0].trim(), // E.g., "Sunday"
-          date: dayText[1]?.trim(), // E.g., "September 22, 2024"
+          date: dayText[1]?.trim()+", "+dayText[2]?.trim(), // E.g., "September 22, 2024"
           data: []
         };
       }
@@ -111,14 +113,26 @@ const scrapeMenuData = async () => {
           foods: foodItems
         };
 
-        currentDay?.data.push(currentMeal); // Add meal to current day
+        currentDay?.data.push(currentMeal); 
       }
     });
 
     if (currentDay) {
       menu.push(currentDay);
     }
-    currentDay === null
+
+    for (const day of menu) {
+      const existingDay = await MenuModal.findOne({ date: day.date });
+  
+      if (!existingDay) {
+        const newDay = new MenuModal(day);
+        await newDay.save();
+        console.log(`Saved menu for ${day.day}, ${day.date}`);
+      } else {
+        console.log(`Menu for ${day.day}, ${day.date} already exists in the database.`);
+      }
+    }
+
     return menu;
 };
 

@@ -4,12 +4,12 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reacts
 import { Col, Row } from "reactstrap";
 import { CiDark, CiLight } from "react-icons/ci";  // Theme icons
 import { HiMenuAlt1 } from "react-icons/hi";  // Menu icon
-import { FaEnvelopeOpenText, FaEnvelope } from "react-icons/fa";  // Subscription icons
+// import { FaEnvelopeOpenText, FaEnvelope } from "react-icons/fa";  
 import { useSelector } from 'react-redux'; 
 import LoginModal from './loginModal';
 import SignupModal from './signUpModal';
 import Sidebar from './sidebar';
-import { subscribeApi, unSubscribeApi, getSubscribeApi } from '../../APIs/subscription';
+// import { subscribeApi, unSubscribeApi, getSubscribeApi } from '../../APIs/subscription';
 import { useDispatch } from 'react-redux';
 import { clearCredentials } from '../../store/credentialsSlice';
 
@@ -28,19 +28,19 @@ export default function Navbar({ page }) {
   const [tab, setTab] = useState(0);
   
   // Subscription state
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  // const [isSubscribed, setIsSubscribed] = useState(false);
 
-  const getSubscriptionHandler = async () => {
-    const { data, status } = await getSubscribeApi()
-    setIsSubscribed(data);
-  }
+  // const getSubscriptionHandler = async () => {
+  //   const { data, status } = await getSubscribeApi()
+  //   setIsSubscribed(data);
+  // }
   
-  useEffect(() => {
+  // useEffect(() => {
 
-    if(page || credentials){
-      getSubscriptionHandler()
-    }
-  }, [page]);
+  //   if(page || credentials){
+  //     getSubscriptionHandler()
+  //   }
+  // }, [page]);
 
   useEffect(() => {
     setPath(window.location.pathname);
@@ -66,15 +66,14 @@ export default function Navbar({ page }) {
     setTheme(document.body.getAttribute('data-theme'));
   }
   
-  // Handle Subscribe/Unsubscribe
-  const handleSubscriptionToggle = async () => {
-    if(isSubscribed){
-      await unSubscribeApi()
-    }else{
-      await subscribeApi()
-    }
-    setIsSubscribed(!isSubscribed);
-  }
+  // const handleSubscriptionToggle = async () => {
+  //   if(isSubscribed){
+  //     await unSubscribeApi()
+  //   }else{
+  //     await subscribeApi()
+  //   }
+  //   setIsSubscribed(!isSubscribed);
+  // }
 
   return (
     <>
@@ -131,8 +130,7 @@ export default function Navbar({ page }) {
                 }
               </li>
 
-              {/* Subscribe/Unsubscribe button */}
-              {credentials?.role && credentials?.role !== "Admin" ?
+              {/* {credentials?.role && credentials?.role !== "Admin" ?
                 <li className="nav-item">
                   <Button
                     onClick={handleSubscriptionToggle}
@@ -151,7 +149,7 @@ export default function Navbar({ page }) {
                   </Button>
                 </li>
                 : null
-              }
+              } */}
               
 
               <li className="nav-item">

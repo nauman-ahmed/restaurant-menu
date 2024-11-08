@@ -46,6 +46,7 @@ mongoose
   .connect( process.env.DEBUG == "true" ? process.env.MONGO_URI_LOCAL : process.env.MONGO_URI_PROD)
   .then(() => {
     app.listen(3001);
+    console.log("DB CONNECTED")
   })
   .catch(err => {
     console.log(err);

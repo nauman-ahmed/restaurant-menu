@@ -7,9 +7,13 @@ import FavoriteTab from "./favorite";
 import { getRatingsObj } from "../utilities";
 import { getUserRatings, updateRating } from "../APIs/ratings";
 import UserUpdateModal from "../components/global/userDetailsUpdateModal";
+import UserPreference from "./userPreference";
+import Newsletter from "./newsletter";
+import UserFeedback from "./userFeedback";
 
 export default function Student() {
     
+    const studentItems = ['Student Dashboard', "Favorite Items", "User Preferences", "Newsletter", "Feedback Form"];
     const currentTab = useSelector((state) => state.sideBarTabs.currentTab);
     const credentials = useSelector((state) => state.credentials.credentials);
     const navigate = useNavigate()
@@ -20,7 +24,7 @@ export default function Student() {
     
     const getUserFavoriteAndRatingsHandler = async () => {
         try {
-          
+          console.log("getUserFavoriteAndRatingsHandler")
           let ratings = await getUserRatings();
           setRatings(getRatingsObj(ratings.data))
         } catch (error) {
@@ -105,23 +109,20 @@ export default function Student() {
                         >
                             Hi, {userDetails?.fullName}
                         </div>
-                        <div onClick={()=> setTab(0)} className={`cursor-pointer w-100 p-2 ${tab === 0 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
-                            ⦿ Student Dashboard
-                        </div>
-                        <div onClick={()=> {setTab(1)}} className={`cursor-pointer w-100 p-2 ${tab === 1 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
-                            ⦿ Favorite Items
-                        </div>
-                        {/* <div onClick={()=> setTab(3)} className={`cursor-pointer w-100 p-2 ${tab === 3 ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
-                            ⦿ Favorites
-                        </div> */}
-
-
+                        {studentItems.map((item, index) => 
+                            <div onClick={()=> setTab(index)} style={{ fontWeight: "bold" }} className={`cursor-pointer  w-100 p-2 ${tab === index ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
+                            ⦿ {item}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div style={{ padding: '10px' }} className="menuForPages">
                     {updateModal && <UserUpdateModal updateModal={updateModal} setUpdateModal={setUpdateModal}/> }
-                    {tab == 0 && <Menu handleRating={handleRating} ratings={ratings}/>}
+                    {tab == 0 && <Menu handleRating={handleRating} ratings={ratings} getUserFavoriteAndRatingsHandler={getUserFavoriteAndRatingsHandler}/>}
                     {tab == 1 && <FavoriteTab ratings={ratings}/>}
+                    {tab == 2 && <UserPreference/>}
+                    {tab == 3 && <Newsletter/>}
+                    {tab == 4 && <UserFeedback/>}
                 </div>
             </section>
         </>

@@ -14,7 +14,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Staurday', 'Sunday'];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Novemer', 'December'];
 
-export default function Menu({ handleRating, ratings }) {
+export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsHandler }) {
 
   const credentials = useSelector((state) => state.credentials.credentials);
   
@@ -110,12 +110,13 @@ export default function Menu({ handleRating, ratings }) {
         const foodNames = getFoodNames(data.favorites);
         setFavorites([...foodNames]);
       }
+      getUserFavoriteAndRatingsHandler()
     } catch (error) {
       console.log("Error", error);
     }
   };
 
-  const getUserFavoriteAndRatingsHandler = async () => {
+  const getUserFavoriteHandler = async () => {
     try {
       const { data, status } = await getUserFavorite();
       setFavorites(getFoodNames(data));
@@ -140,9 +141,9 @@ export default function Menu({ handleRating, ratings }) {
     
     if (credentials?.role === 'Student') {
       setShowFavorites(true);
-      getUserFavoriteAndRatingsHandler();
+      getUserFavoriteHandler();
     } 
-    // localStorage.removeItem('menuData')
+    localStorage.removeItem('menuData')
     if (localStorage.getItem('menuData')) {
       const menuData = JSON.parse(localStorage.getItem('menuData'));
       if (menuData?.some(obj => obj.date.includes(months[new Date().getMonth()])) && menuData?.some(obj => obj.date.split(' ')[1] === new Date().getDate)) {
@@ -166,7 +167,6 @@ export default function Menu({ handleRating, ratings }) {
       menu?.forEach(mainobj => {
         mainobj.data.forEach(mealObj => {
           mealObj.foods.forEach(item => {
-            console.log("Dialog", item)
             if (item.toLowerCase().includes(searchText?.toLowerCase())) {
               searchingData.push({
                 date: mainobj.date + ' | ' + mainobj.day,
