@@ -187,8 +187,8 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
   };
 
   const onUpdate = (updatedMenu) => {
-    console.log("onUpdate", updatedMenu)
     dispatch(updateMenusApi(updatedMenu))
+    dispatch(fetchMenus());
   }
 
   return (

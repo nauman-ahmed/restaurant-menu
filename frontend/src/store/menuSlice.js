@@ -31,7 +31,6 @@ export const fetchMenus = createAsyncThunk('menu/fetchMenus', async () => {
 export const updateMenusApi = createAsyncThunk('menu/updateMenus', async (dayInput) => {
   try {
     const requestBody = updateMenuRequestBody(dayInput)
-    console.log("Request Body", requestBody)
     const response = await axios.post(
         backendUrl + "/graphql", 
         JSON.stringify(requestBody),
