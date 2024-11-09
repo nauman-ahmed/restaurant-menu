@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { getMenuRequestBody } from '../graphQlSchema/menu';
+import { getMenuRequestBody, updateMenuRequestBody } from '../graphQlSchema/menu';
 import { formatDate } from '../utilities';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -26,6 +26,26 @@ export const fetchMenus = createAsyncThunk('menu/fetchMenus', async () => {
       }
   );
   return response.data.data.getAllMenus
+});
+
+export const updateMenusApi = createAsyncThunk('menu/updateMenus', async (dayInput) => {
+  try {
+    const requestBody = updateMenuRequestBody(dayInput)
+    console.log("Request Body", requestBody)
+    const response = await axios.post(
+        backendUrl + "/graphql", 
+        JSON.stringify(requestBody),
+        {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+    return response.data.data.createMenu    
+  } catch (error) {
+    console.log("Error", error)
+  }
+
 });
 
 const menuSlice = createSlice({
@@ -61,6 +81,19 @@ const menuSlice = createSlice({
         state.error = '';
       })
       .addCase(fetchMenus.rejected, (state, action) => {
+        state.loading = false;
+        state.menus = [];
+        state.error = action.error.message;
+      })
+      .addCase(updateMenusApi.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateMenusApi.fulfilled, (state, action) => {
+        state.loading = false;
+        state.menus = state.menus;
+        state.error = '';
+      })
+      .addCase(updateMenusApi.rejected, (state, action) => {
         state.loading = false;
         state.menus = [];
         state.error = action.error.message;

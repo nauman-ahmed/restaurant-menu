@@ -3,25 +3,23 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { FaChevronDown, FaChevronUp, FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa6";  // Import star icons
 import dayjs from "dayjs";
-import axios from "axios";
 import { toast } from 'react-toastify';
 import { addFavorite, getUserFavorite, removeFavorite } from "../../APIs/favourite";
-import { getFoodNames, formatDate } from "../../utilities";
+import { getFoodNames } from "../../utilities";
 import { getBannerTiming } from "../../APIs/banner"
-import { scrapeMenus, fetchMenus } from '../../store/menuSlice';
+import { scrapeMenus, fetchMenus, updateMenusApi } from '../../store/menuSlice';
+import { Button } from 'reactstrap';
+import MenuModal from "../global/menuModal";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Staurday', 'Sunday'];
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Novemer', 'December'];
 const dayToFetch = 5
 
-export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsHandler }) {
+export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsHandler, adminLogin }) {
 
   const credentials = useSelector((state) => state.credentials.credentials);
   const dispatch = useDispatch();
   const { loading, menus, error } = useSelector((state) => state.menus);
 
+  const [menuUpdateModal, setMenuUpdateModal] = useState(false)
   const [duration, setDuration] = useState('day');
   const [dataIndex, setDataIndex] = useState(0);
   const [openMenu, setOpenMenu] = useState(0);
@@ -30,9 +28,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
   const [searching, setSearching] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [favorites, setFavorites] = useState([]);
-  const [menu, setMenu] = useState(null);
   const [showBanner, setShowBanner] = useState(false);
-  const [getTime, setGetTime] = useState(false);
   const [bannerMessage, setBannerMessage] = useState('');
   const [timing, setTiming] = useState({
     startTimeOne: '',
@@ -44,21 +40,24 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
   });
   
   const gatBannerTimingHandler = async () => {
+    
     const { data, status} = await getBannerTiming(null)
     setTiming(data)
+
   }
 
   const isWithinTimeRange = (startTime, endTime) => {
+   
     const current = new Date();
     const start = new Date(startTime);
     const end = new Date(endTime);
     return current >= start && current <= end;
+
   };
 
   useEffect(() => {
     const checkTimeForBanner = () => {
 
-      // Set time conditions
       const isMorningBannerTime = isWithinTimeRange(timing.startTimeOne, timing.startTimeTwo);
       const isEveningBannerTime = isWithinTimeRange(timing.endTimeOne, timing.endTimeTwo);
 
@@ -82,10 +81,10 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
     // Initial check and set interval to check every minute
     checkTimeForBanner();
     gatBannerTimingHandler()
-    const intervalId = setInterval(checkTimeForBanner, 1000); // Check every minute
+    const intervalId = setInterval(checkTimeForBanner, 10000); // Check every minute
 
     return () => clearInterval(intervalId); // Clean up on component unmount
-  }, [timing]);
+  }, []);
 
   const handleNextDay = () => {
     setOpenMenu(0);
@@ -133,9 +132,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
     } 
   };
 
-
   useEffect(() => {
-    
     if(new Date().getDay() === dayToFetch){
       dispatch(scrapeMenus());
     }else{
@@ -144,11 +141,9 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
   }, [dispatch]);
 
   useEffect(() => {
-    if(menus.length){
-      const index = menus.findIndex(obj => new Date(obj.date).getDate() == new Date().getDate());
-      setDataIndex(index == -1 ? 6 : index);
-    }
-  }, [menus]);
+    const index = menus.findIndex(obj => new Date(obj.date).getDate() == new Date().getDate());
+    setDataIndex(index == -1 ? 6 : index);
+  }, []);
 
   useEffect(() => {
     
@@ -191,9 +186,21 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
     }
   };
 
+  const onUpdate = (updatedMenu) => {
+    console.log("onUpdate", updatedMenu)
+    dispatch(updateMenusApi(updatedMenu))
+  }
 
   return (
     <>
+      {menuUpdateModal && !loading &&
+        <MenuModal 
+          menuUpdateModal={menuUpdateModal} 
+          setMenuUpdateModal={setMenuUpdateModal} 
+          data={menus}
+          onUpdate={onUpdate}
+        />
+      }
       <div>
         {showBanner && (
           <div className="banner">
@@ -215,6 +222,9 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
           <>
             <div className=" w-100 d-flex flex-col gap-2 border  p-2 border-circular">
               <div className="d-flex justify-content-end mt-2 mb-4 w-100">
+                {adminLogin && 
+                  <Button className="mx-2 dayWeek-selected" onClick={() => setMenuUpdateModal(!menuUpdateModal)}>Add</Button>
+                }
                 <input
                   onKeyDown={handleKeyDown}
                   value={searchText}
@@ -248,7 +258,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                   {searchedData ? <>
                     {searchedData.length > 0 ?
                       <div style={{ gap: '5px' }} className="w-100 d-flex my-4 flex-col">
-                        {searchedData?.map(data => <div className="border-circular w-100 bg-lightorange p-2 d-flex flex-col ">
+                        {searchedData?.map((data, index) => <div key={index} className="border-circular w-100 bg-lightorange p-2 d-flex flex-col ">
                           <p className="fs-17 my-1" dangerouslySetInnerHTML={{ __html: `○ <b>${data.item.split('-')[0]}</b>${data.item.split('-')[1] ? ` - ${data.item.split('-')[1]}` : ''}${data.item.split('-')[2] ? ` - ${data.item.split('-')[2]}` : ''}${data.item.split('-')[3] ? ` - ${data.item.split('-')[3]}` : ''}${data.item.split('-')[4] ? ` - ${data.item.split('-')[4]}` : ''}` }}>
                           </p>
                           <div className="w-100 d-flex justify-content-end ">

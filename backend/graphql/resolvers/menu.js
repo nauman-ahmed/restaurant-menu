@@ -23,14 +23,19 @@ const resolvers = {
       }
     },
     async createMenu({ dayInput }) {
-        const newMenu = new Menu({
-        day: dayInput.day,
-        date: dayInput.date,
-        data: dayInput.data
-        });
-
+        
         try {
-        return await newMenu.save();
+          const updatedDay = await Menu.findOneAndUpdate(
+            { _id: dayInput._id },         
+            { $set: { data: dayInput.data } }, 
+            { new: true }                   
+          );
+
+          if (!updatedDay) {
+            throw new Error('Day not found');
+          }
+
+          return updatedDay;
         } catch (error) {
         throw new Error('Error creating menu: ' + error.message);
         }

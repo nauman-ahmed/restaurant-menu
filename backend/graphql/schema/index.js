@@ -93,6 +93,7 @@ input MealInput {
 }
 
 input DayInput {
+  _id: ID!
   day: String!
   date: String!
   data: [MealInput!]!

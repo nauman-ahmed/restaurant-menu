@@ -7,10 +7,11 @@ import { getAllUser } from "../APIs/users";
 import RatingInsight from "./ratingInsight"
 import { getCleanText } from "../utilities";
 import BannerTime from "./banner";
+import Menu from "../components/home/menu";
 
 export default function Admin() {
   
-    const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing'];
+    const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing', "Menus"];
     const currentTab = useSelector((state) => state.sideBarTabs.currentTab);
     const credentials = useSelector((state) => state.credentials.credentials);
     const navigate = useNavigate()
@@ -162,6 +163,7 @@ export default function Admin() {
                     {tab == 1 && <RatingInsight title = {"Rating Insight"} data={userRatings} />}
                     {tab == 2 && <RatingInsight title = {"Favorite Insight"} data={userFavorites} maxCount={maxCount}/>}
                     {tab == 3 && <BannerTime title = {"Banner Timing"}/>}
+                    {tab == 4 && <Menu  adminLogin = {true}/>}
                 </div>
             </section>
 
