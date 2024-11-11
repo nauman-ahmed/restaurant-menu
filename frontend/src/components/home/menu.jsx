@@ -11,7 +11,7 @@ import { scrapeMenus, fetchMenus, updateMenusApi } from '../../store/menuSlice';
 import { Button } from 'reactstrap';
 import MenuModal from "../global/menuModal";
 
-const dayToFetch = 2 // 0 is Sunday 6 is Saturday
+const dayToFetch = 0 // 0 is Sunday 6 is Saturday
 
 export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsHandler, adminLogin }) {
 
@@ -143,7 +143,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
   useEffect(() => {
     const index = menus.findIndex(obj => new Date(obj.date).getDate() == new Date().getDate());
     setDataIndex(index == -1 ? 6 : index);
-  }, []);
+  }, [menus]);
 
   useEffect(() => {
     
