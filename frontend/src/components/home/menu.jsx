@@ -11,7 +11,7 @@ import { scrapeMenus, fetchMenus, updateMenusApi } from '../../store/menuSlice';
 import { Button } from 'reactstrap';
 import MenuModal from "../global/menuModal";
 
-const dayToFetch = 5
+const dayToFetch = 2 // 0 is Sunday 6 is Saturday
 
 export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsHandler, adminLogin }) {
 
