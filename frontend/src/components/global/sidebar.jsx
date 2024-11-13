@@ -30,7 +30,7 @@ export default function Sidebar({
 
   const menuItems = [{name: "Menu", route:"/"}, {name: "FAQ", route: "/faq"}];
   const studentItems = ['Student Dashboard', "Favorite Items", "User Preferences", "Newsletter", "Feedback Form"];
-  const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing', "Menus"];
+  const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing', "Menus", "Add menu"];
 
   const currentTabHandler = (index) => {
     dispatch(setCurrentTab({ tab: index }));

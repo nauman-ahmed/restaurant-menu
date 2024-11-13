@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../store/credentialsSlice';
 import { login } from '../../APIs/auth';
+import { setCurrentTab } from "../../store/sidebarTabsSlice";
 
 export default function LoginModal({ loginModal, setLoginModal }) {
     
@@ -23,7 +24,7 @@ export default function LoginModal({ loginModal, setLoginModal }) {
                 toast.error('Login failed. Try again.');
                 return 
             }
-
+            dispatch(setCurrentTab({ tab: 0 }))
             dispatch(setCredentials({
                 email: data.email,
                 newsEmail: data.newsEmail,

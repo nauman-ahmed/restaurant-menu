@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import { Col, Row } from "reactstrap";
-import { CiDark, CiLight } from "react-icons/ci";  // Theme icons
-import { HiMenuAlt1 } from "react-icons/hi";  // Menu icon
-// import { FaEnvelopeOpenText, FaEnvelope } from "react-icons/fa";  
+import { CiDark, CiLight } from "react-icons/ci";  
+import { HiMenuAlt1 } from "react-icons/hi";  
 import { useSelector } from 'react-redux'; 
 import LoginModal from './loginModal';
 import SignupModal from './signUpModal';
 import Sidebar from './sidebar';
-// import { subscribeApi, unSubscribeApi, getSubscribeApi } from '../../APIs/subscription';
+import GreetingModal from './greetingsModal';
 import { useDispatch } from 'react-redux';
 import { clearCredentials } from '../../store/credentialsSlice';
 
@@ -19,6 +18,7 @@ export default function Navbar({ page }) {
   const credentials = useSelector((state) => state.credentials.credentials);
   const [loginModal, setLoginModal] = useState(false);
   const [signUpModal, setSignUpModal] = useState(false);
+  const [greetingModal, setGreetingModal] = useState(false);
   const navigate = useNavigate();
   const [path, setPath] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
@@ -65,20 +65,17 @@ export default function Navbar({ page }) {
     setTheme(document.body.getAttribute('data-theme'));
   }
   
-  // const handleSubscriptionToggle = async () => {
-  //   if(isSubscribed){
-  //     await unSubscribeApi()
-  //   }else{
-  //     await subscribeApi()
-  //   }
-  //   setIsSubscribed(!isSubscribed);
-  // }
+  const handleSignHandler = async () => {
+    console.log("handleSignHandler")
+    setGreetingModal(true)
+  }
 
   return (
     <>
       <nav style={{ backgroundColor: 'black' }} className="navbar navbar-expand-md bg-inverse fixed-top scrolling-navbar">
         <LoginModal loginModal={loginModal} setLoginModal={setLoginModal} />
-        <SignupModal signupModal={signUpModal} setSignupModal={setSignUpModal} />
+        <SignupModal signupModal={signUpModal} setSignupModal={setSignUpModal} handleSignHandler={handleSignHandler}/>
+        <GreetingModal greetingModal={greetingModal} setGreetingModal={setGreetingModal} />
 
         <div style={{ height: '75px' }} className="container">
           <a className="navbar-brand">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSelector } from 'react-redux'; 
+import { useSelector, useDispatch } from 'react-redux'; 
 import Navbar from "../components/global/navbar";
 import { useNavigate } from "react-router-dom";
 import UserDetails from "./allUsers";
@@ -8,13 +8,19 @@ import RatingInsight from "./ratingInsight"
 import { getCleanText } from "../utilities";
 import BannerTime from "./banner";
 import Menu from "../components/home/menu";
+import MenuModal from "../components/global/menuModal";
+import {fetchMenus, updateMenusApi } from '../store/menuSlice';
 
 export default function Admin() {
   
-    const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing', "Menus"];
+    const adminItems = ['Dashboard', 'Rating Insights', 'Favorite Insights', 'Banner Timing', "Menus", "Add menu"];
     const currentTab = useSelector((state) => state.sideBarTabs.currentTab);
     const credentials = useSelector((state) => state.credentials.credentials);
+    const { loading, menus, error } = useSelector((state) => state.menus);
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const [menuUpdateModal, setMenuUpdateModal] = useState(false)
     const [tab, setTab] = useState(1)
     const [userDetails, setUserDetails] = useState(null)
     const [userRatings, setUserRatings] = useState(null)
@@ -121,12 +127,17 @@ export default function Admin() {
         };
     }, []);
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+    useEffect(() => {
+        dispatch(fetchMenus());
+      }, [dispatch]);
 
     useEffect(() => { setTab(currentTab)}, [currentTab])
    
+    const onUpdate = (updatedMenu) => {
+        dispatch(updateMenusApi(updatedMenu))
+        dispatch(fetchMenus());
+    }
+
     return (
         <>
             {/* Header Section Start */}
@@ -151,7 +162,7 @@ export default function Admin() {
                             Admin Dashboard
                         </div>
                         {adminItems.map((item, index) => 
-                            <div onClick={() => setTab(index)} className={`cursor-pointer w-100 p-2 ${tab === index ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
+                            <div onClick={() => setTab(index)} style={{ fontWeight: "bold" }} className={`cursor-pointer w-100 p-2 ${tab === index ? 'bg-orange  text-white' : 'text-black'}  text border-circular`}>
                                 ⦿ {item}
                             </div>
                         )}
@@ -164,6 +175,13 @@ export default function Admin() {
                     {tab == 2 && <RatingInsight title = {"Favorite Insight"} data={userFavorites} maxCount={maxCount}/>}
                     {tab == 3 && <BannerTime title = {"Banner Timing"}/>}
                     {tab == 4 && <Menu  adminLogin = {true}/>}
+                    {tab == 5 && <MenuModal 
+                                    menuUpdateModal={menuUpdateModal} 
+                                    setMenuUpdateModal={setMenuUpdateModal} 
+                                    data={menus}
+                                    onUpdate={onUpdate}
+                                    />
+                    }
                 </div>
             </section>
 

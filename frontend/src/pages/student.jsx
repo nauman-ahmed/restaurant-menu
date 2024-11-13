@@ -16,15 +16,15 @@ export default function Student() {
     const studentItems = ['Student Dashboard', "Favorite Items", "User Preferences", "Newsletter", "Feedback Form"];
     const currentTab = useSelector((state) => state.sideBarTabs.currentTab);
     const credentials = useSelector((state) => state.credentials.credentials);
-    const navigate = useNavigate()
     const [ratings, setRatings] = useState({});  // State to store ratings for food items
     const [tab , setTab] = useState(0)
     const [userDetails , setUserDetails] = useState(null)
     const [updateModal , setUpdateModal] = useState(false)
     
+    const navigate = useNavigate()
+
     const getUserFavoriteAndRatingsHandler = async () => {
         try {
-          console.log("getUserFavoriteAndRatingsHandler")
           let ratings = await getUserRatings();
           setRatings(getRatingsObj(ratings.data))
         } catch (error) {
@@ -81,10 +81,6 @@ export default function Student() {
     }, []);
 
     useEffect(() => { setUserDetails(credentials); setTab(currentTab)}, [credentials, currentTab])
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
 
     return (
         <>

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 import { register } from '../../APIs/auth'; // Assuming this is the registration API call
 
-export default function SignupModal({ signupModal, setSignupModal }) {
+export default function SignupModal({ signupModal, setSignupModal, handleSignHandler }) {
     
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
@@ -26,6 +26,7 @@ export default function SignupModal({ signupModal, setSignupModal }) {
                 toast.error('Signup failed. Try again.');
                 return
             }
+            handleSignHandler()
             setSignupModal(false)
             setEmail("")
             setPassword("")

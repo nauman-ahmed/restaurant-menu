@@ -30,102 +30,98 @@ export default function MenuModal({ menuUpdateModal, setMenuUpdateModal, data, o
         setMenuUpdateModal(false); 
         onUpdate(updatedData[Number(selectedDayIndex)]); 
         toast.success("Food item added successfully!");
-        // setNewFood('');
+        setNewFood('');
     };
 
     return (
-        <>
-        <Modal isOpen={menuUpdateModal} centered={true} size="md">
-            <ModalHeader>
-                <p style={{
+        <div className='px-5'>
+            <h2 style={{
                     fontSize: '20px',
                     fontWeight: 'bold'
-                }} className='w-100 text-black fw-bold text-center theme-color'>
-                    Add Menu Item
-                </p>
-            </ModalHeader>
+                }} className='w-100 mb-5 text-black fw-bold text-center theme-color'>
+                    Add Menu Item</h2>
+            
             <Form onSubmit={handleAddFood}>
-                <ModalBody className='p-5'>
-                    <Row>
-                        <Col md="12">
-                            <FormGroup>
-                                <Label for="daySelect">Select Day</Label>
-                                <Input
-                                    type="select"
-                                    name="daySelect"
-                                    id="daySelect"
-                                    value={selectedDayIndex}
-                                    className='mx-2 p-1'
-                                    onChange={(e) => {
-                                        setSelectedDayIndex(Number(e.target.value));
-                                        setSelectedMealIndex(0);
-                                    }}
-                                >
-                                    {data.map((day, index) => (
-                                        <option key={day._id} value={index}>
-                                            {day.day} - {day.date}
-                                        </option>
-                                    ))}
-                                </Input>
-                            </FormGroup>
+                <Row>
+                    <Col md="6">
+                        <FormGroup>
+                            <Label for="daySelect">Select Day</Label>
+                            <Input
+                                type="select"
+                                name="daySelect"
+                                id="daySelect"
+                                value={selectedDayIndex}
+                                className='mx-2 p-1'
+                                onChange={(e) => {
+                                    setSelectedDayIndex(Number(e.target.value));
+                                    setSelectedMealIndex(0);
+                                }}
+                            >
+                                {data.map((day, index) => (
+                                    <option key={day._id} value={index}>
+                                        {day.day} - {day.date}
+                                    </option>
+                                ))}
+                            </Input>
+                        </FormGroup>
+                    </Col>
+                    <Col md="6">
+                        <FormGroup>
+                            <Label for="mealSelect">Select Meal</Label>
+                            <Input
+                                type="select"
+                                name="mealSelect"
+                                id="mealSelect"
+                                className='mx-2 p-1'
+                                value={selectedMealIndex}
+                                onChange={(e) => setSelectedMealIndex(Number(e.target.value))}
+                            >
+                                {data[selectedDayIndex]?.data?.map((meal, index) => (
+                                    <option key={index} value={index}>
+                                        {meal.meal}
+                                    </option>
+                                ))}
+                            </Input>
+                        </FormGroup>
+                    </Col>
+                    <Col md="6">
+                        <FormGroup>
+                            <Label for="newFood">New Food Item</Label>
+                            <Input
+                                type="text"
+                                name="newFood"
+                                id="newFood"
+                                placeholder="Enter food item"
+                                value={newFood}
+                                onChange={(e) => setNewFood(e.target.value)}
+                                required
+                            />
+                        </FormGroup>
                         </Col>
-                        <Col md="12">
-                            <FormGroup>
-                                <Label for="mealSelect">Select Meal</Label>
-                                <Input
-                                    type="select"
-                                    name="mealSelect"
-                                    id="mealSelect"
-                                    className='mx-2 p-1'
-                                    value={selectedMealIndex}
-                                    onChange={(e) => setSelectedMealIndex(Number(e.target.value))}
-                                >
-                                    {data[selectedDayIndex]?.data?.map((meal, index) => (
-                                        <option key={index} value={index}>
-                                            {meal.meal}
-                                        </option>
-                                    ))}
-                                </Input>
-                            </FormGroup>
-                        </Col>
-                        <Col md="12">
-                            <FormGroup>
-                                <Label for="newFood">New Food Item</Label>
-                                <Input
-                                    type="text"
-                                    name="newFood"
-                                    id="newFood"
-                                    placeholder="Enter food item"
-                                    value={newFood}
-                                    onChange={(e) => setNewFood(e.target.value)}
-                                    required
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="newFood">Dietary Labeling</Label>
-                                <Input
-                                    type="text"
-                                    name="newFood"
-                                    id="newFood"
-                                    placeholder="Enter dietary labeling"
-                                    value={newFoodDiet}
-                                    onChange={(e) => setNewFoodDiet(e.target.value)}
-                                    required
-                                />
-                            </FormGroup>
-                        </Col>
-                    </Row>
-                </ModalBody>
-                <ModalFooter>
-                    <Button type='submit' color="primary">
+                    <Col md="6">
+
+                        <FormGroup>
+                            <Label for="newFood">Dietary Labeling</Label>
+                            <Input
+                                type="text"
+                                name="newFood"
+                                id="newFood"
+                                placeholder="Enter dietary labeling"
+                                value={newFoodDiet}
+                                onChange={(e) => setNewFoodDiet(e.target.value)}
+                            />
+                        </FormGroup>
+                    </Col>
+                </Row>
+                <Row className='d-flex justify-content-center'>
+                    <Button type='submit' color="primary" className='mx-2'>
                         Add Item
                     </Button>
-                    <Button onClick={() => setMenuUpdateModal(false)} color="danger">
+                    <Button className='mx-2' onClick={() => setMenuUpdateModal(false)} color="danger">
                         Cancel
                     </Button>
-                </ModalFooter>
+                </Row >
             </Form>
-        </Modal>
-        </>
+        </div>
     );
 }

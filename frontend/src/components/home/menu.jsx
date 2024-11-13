@@ -10,6 +10,8 @@ import { getBannerTiming } from "../../APIs/banner"
 import { scrapeMenus, fetchMenus, updateMenusApi } from '../../store/menuSlice';
 import { Button } from 'reactstrap';
 import MenuModal from "../global/menuModal";
+import { setCurrentTab } from '../../store/sidebarTabsSlice'
+import { useNavigate } from "react-router-dom";
 
 const dayToFetch = 0 // 0 is Sunday 6 is Saturday
 
@@ -17,12 +19,14 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
 
   const credentials = useSelector((state) => state.credentials.credentials);
   const dispatch = useDispatch();
+  const navigate = useNavigate()
+
   const { loading, menus, error } = useSelector((state) => state.menus);
 
   const [menuUpdateModal, setMenuUpdateModal] = useState(false)
   const [duration, setDuration] = useState('day');
   const [dataIndex, setDataIndex] = useState(0);
-  const [openMenu, setOpenMenu] = useState(0);
+  const [openMenu, setOpenMenu] = useState([0]);
   const [searchText, setSearchText] = useState('');
   const [searchedData, setSearchedData] = useState(null);
   const [searching, setSearching] = useState(false);
@@ -57,7 +61,6 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
 
   useEffect(() => {
     const checkTimeForBanner = () => {
-
       const isMorningBannerTime = isWithinTimeRange(timing.startTimeOne, timing.startTimeTwo);
       const isEveningBannerTime = isWithinTimeRange(timing.endTimeOne, timing.endTimeTwo);
 
@@ -74,25 +77,31 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
       } else {
         if(showBanner){
           setShowBanner(false);
-         }
+          }
       }
     };
 
     // Initial check and set interval to check every minute
-    checkTimeForBanner();
-    gatBannerTimingHandler()
-    const intervalId = setInterval(checkTimeForBanner, 10000); // Check every minute
+    
+    let intervalId;
+    if(timing.startTimeOne){
+      checkTimeForBanner();
+      setInterval(checkTimeForBanner, 1000); // Check every minute
+    }else{
+      gatBannerTimingHandler()
+    }
 
     return () => clearInterval(intervalId); // Clean up on component unmount
-  }, []);
+
+  }, [timing]);
 
   const handleNextDay = () => {
-    setOpenMenu(0);
+    setOpenMenu([0]);
     setDataIndex(dataIndex + 1);
   };
 
   const handlePreviousDay = () => {
-    setOpenMenu(0);
+    setOpenMenu([0]);
     setDataIndex(dataIndex - 1);
   };
 
@@ -151,7 +160,9 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
       setShowFavorites(true);
       getUserFavoriteHandler();
     } 
-
+    if (credentials?.role === 'Admin') {
+      navigate("/admin")
+    } 
   }, []);
 
   const applySearch = () => {
@@ -193,14 +204,14 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
 
   return (
     <>
-      {menuUpdateModal && !loading &&
+      {/* {menuUpdateModal && !loading &&
         <MenuModal 
           menuUpdateModal={menuUpdateModal} 
           setMenuUpdateModal={setMenuUpdateModal} 
           data={menus}
           onUpdate={onUpdate}
         />
-      }
+      } */}
       <div>
         {showBanner && (
           <div className="banner">
@@ -222,9 +233,9 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
           <>
             <div className=" w-100 d-flex flex-col gap-2 border  p-2 border-circular">
               <div className="d-flex justify-content-end mt-2 mb-4 w-100">
-                {adminLogin && 
+                {/* {adminLogin && 
                   <Button className="mx-2 dayWeek-selected" onClick={() => setMenuUpdateModal(!menuUpdateModal)}>Add</Button>
-                }
+                } */}
                 <input
                   onKeyDown={handleKeyDown}
                   value={searchText}
@@ -302,12 +313,12 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                   <div style={{ maxWidth: '700px', width: '100%' }} className=" my-5 text text-black mx-auto">
                     {menus[dataIndex]?.data?.map((foodInfo, index) => (
                       <>
-                        <div key={index} onClick={() => setOpenMenu(openMenu === index ? null : index)} className={`w-100 d-flex cursor-pointer justify-content-between border-circular ${openMenu === index ? 'bg-orange text-white' : 'bg-lightdark text-black'} align-items-center p-2 border-bottom border-secondary`}>
-                          <p className={`${openMenu === index ? 'text-white fs-20' : 'text-black'} text `}>{foodInfo.meal}</p>
+                        <div key={index} onClick={() => openMenu.includes(index) ? setOpenMenu((prevOpenMenu) => prevOpenMenu.filter((item) => item !== index)) : setOpenMenu((prevStat) => [...prevStat,index])} className={`w-100 d-flex cursor-pointer justify-content-between border-circular ${openMenu.includes(index) ? 'bg-orange text-white' : 'bg-lightdark text-black'} align-items-center p-2 border-bottom border-secondary`}>
+                          <p className={`${openMenu.includes(index) ? 'text-white fs-20' : 'text-black'} text `}>{foodInfo.meal}</p>
 
-                          {openMenu === index ? <FaChevronUp className="cursor-pointer" /> : <FaChevronDown className="cursor-pointer" />}
+                          {openMenu.includes(index) ? <FaChevronUp className="cursor-pointer" /> : <FaChevronDown className="cursor-pointer" />}
                         </div>
-                        {openMenu === index && (
+                        {openMenu.includes(index) && (
                           <ul className="bg-lightorange p-3 border-circular" style={{ paddingLeft: '20px', marginBottom: '15px' }}>
                             {foodInfo.foods?.map((food, foodIndex) => (
                               <li key={foodIndex} style={{ fontSize: '16px', display: "flex !important", alignItems: "start !important" }} className="d-flex align-items-center justify-content-between">
@@ -345,7 +356,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                   <div style={{ gap: '20px', }} className="w-100 mt-5 d-flex justify-content-center flex-wrap align-items-center flex-row">
                     {menus?.map((obj, index) => (
                       <div style={{ borderRadius: '40px', }} onClick={() => {
-                        setOpenMenu(0)
+                        setOpenMenu([0])
                         setDataIndex(index)
                       }} className={`p-2 text-center day-option ${dataIndex === index ? "dayWeek-selected" : ''} `}>
                         {obj.day}
@@ -357,15 +368,15 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                     {menus[dataIndex].data?.map((foodInfo, index) => (
                       <>
                         <div key={index} onClick={() => {
-                          setOpenMenu(openMenu === index ? null : index)
-                        }} className={`w-100 d-flex cursor-pointer justify-content-between border-circular ${openMenu === index ? 'bg-orange text-white' : 'bg-lightdark text-black'}   align-items-center p-2 border-bottom border-secondary`}>
-                          <p className={`${openMenu === index ? 'text-white' : 'text-black'} text `}>{foodInfo.meal}</p>
+                          openMenu.includes(index) ? setOpenMenu((prevOpenMenu) => prevOpenMenu.filter((item) => item !== index)) : setOpenMenu((prevStat) => [...prevStat,index])
+                        }} className={`w-100 d-flex cursor-pointer justify-content-between border-circular ${openMenu.includes(index) ? 'bg-orange text-white' : 'bg-lightdark text-black'}   align-items-center p-2 border-bottom border-secondary`}>
+                          <p className={`${openMenu.includes(index) ? 'text-white' : 'text-black'} text `}>{foodInfo.meal}</p>
 
-                          {openMenu === index ? <FaChevronUp className="cursor-pointer" /> :
+                          {openMenu.includes(index) ? <FaChevronUp className="cursor-pointer" /> :
                             <FaChevronDown className="cursor-pointer" />
                           }
                         </div>
-                        {openMenu === index && (
+                        {openMenu.includes(index) && (
                           <ul className="bg-lightorange p-3 border-circular" style={{ paddingLeft: '20px', marginBottom: '15px' }}>
                             {foodInfo.foods?.map((food, foodIndex) => (
                               <li key={foodIndex} style={{ fontSize: '16px', display: "flex !important", alignItems: "start !important" }}
