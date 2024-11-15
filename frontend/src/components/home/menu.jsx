@@ -24,6 +24,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
   const { loading, menus, error } = useSelector((state) => state.menus);
 
   const [menuUpdateModal, setMenuUpdateModal] = useState(false)
+  const [buttonText, setButtonText] = useState(true);
   const [duration, setDuration] = useState('day');
   const [dataIndex, setDataIndex] = useState(0);
   const [openMenu, setOpenMenu] = useState([0]);
@@ -42,7 +43,11 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
     startTimeText: '',
     endTimeText: ''
   });
-  
+  const [currentPage, setCurrentPage] = useState(0);
+  const daysPerPage = 7;
+  const endIndex = currentPage * daysPerPage;
+  const startIndex = endIndex - daysPerPage;
+
   const gatBannerTimingHandler = async () => {
     
     const { data, status} = await getBannerTiming(null)
@@ -86,7 +91,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
     let intervalId;
     if(timing.startTimeOne){
       checkTimeForBanner();
-      setInterval(checkTimeForBanner, 1000); // Check every minute
+      intervalId = setInterval(checkTimeForBanner, 1000); // Check every minute
     }else{
       gatBannerTimingHandler()
     }
@@ -103,6 +108,16 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
   const handlePreviousDay = () => {
     setOpenMenu([0]);
     setDataIndex(dataIndex - 1);
+  };
+
+  const handleNextWeek = () => {
+    setOpenMenu([0]);
+    setCurrentPage(prevStat => prevStat + 1)
+  };
+
+  const handlePreviousWeek = () => {
+    setOpenMenu([0]);
+    setCurrentPage(prevStat => prevStat - 1)
   };
 
   const toggleFavorite = async (food) => {
@@ -152,6 +167,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
   useEffect(() => {
     const index = menus.findIndex(obj => new Date(obj.date).getDate() == new Date().getDate());
     setDataIndex(index == -1 ? 6 : index);
+    setCurrentPage(menus.length / 7)
   }, [menus]);
 
   useEffect(() => {
@@ -202,6 +218,16 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
     dispatch(fetchMenus());
   }
 
+  const collapseHandler = () => {
+    if(buttonText){
+      setOpenMenu([0,1,2,3])
+      setButtonText(!buttonText)
+    }else{
+      setOpenMenu([])
+      setButtonText(!buttonText)
+    }
+  }
+
   return (
     <>
       {/* {menuUpdateModal && !loading &&
@@ -233,9 +259,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
           <>
             <div className=" w-100 d-flex flex-col gap-2 border  p-2 border-circular">
               <div className="d-flex justify-content-end mt-2 mb-4 w-100">
-                {/* {adminLogin && 
-                  <Button className="mx-2 dayWeek-selected" onClick={() => setMenuUpdateModal(!menuUpdateModal)}>Add</Button>
-                } */}
+                <Button className="mx-2 dayWeek-selected" onClick={collapseHandler} >{buttonText ? "Collapse" : "Uncollapse"}</Button>
                 <input
                   onKeyDown={handleKeyDown}
                   value={searchText}
@@ -315,7 +339,6 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                       <>
                         <div key={index} onClick={() => openMenu.includes(index) ? setOpenMenu((prevOpenMenu) => prevOpenMenu.filter((item) => item !== index)) : setOpenMenu((prevStat) => [...prevStat,index])} className={`w-100 d-flex cursor-pointer justify-content-between border-circular ${openMenu.includes(index) ? 'bg-orange text-white' : 'bg-lightdark text-black'} align-items-center p-2 border-bottom border-secondary`}>
                           <p className={`${openMenu.includes(index) ? 'text-white fs-20' : 'text-black'} text `}>{foodInfo.meal}</p>
-
                           {openMenu.includes(index) ? <FaChevronUp className="cursor-pointer" /> : <FaChevronDown className="cursor-pointer" />}
                         </div>
                         {openMenu.includes(index) && (
@@ -354,15 +377,23 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
               {duration === 'week' && (
                 <>
                   <div style={{ gap: '20px', }} className="w-100 mt-5 d-flex justify-content-center flex-wrap align-items-center flex-row">
-                    {menus?.map((obj, index) => (
+                    {startIndex > 0 && (
+                      <div onClick={handlePreviousWeek} style={{ width: '40px', height: '40px', borderRadius: '100%' }} className=" bg-orange d-flex justify-content-center align-items-center cursor-pointer ">
+                        <FiChevronLeft style={{ fontSize: '25px' }} className="text-white" />
+                      </div>
+                    )}
+                    {menus?.slice(startIndex, endIndex).map((obj, index) => (
                       <div style={{ borderRadius: '40px', }} onClick={() => {
                         setOpenMenu([0])
-                        setDataIndex(index)
-                      }} className={`p-2 text-center day-option ${dataIndex === index ? "dayWeek-selected" : ''} `}>
+                      }} className={`p-2 text-center day-option ${new Date(obj.date).getDate() == new Date().getDate() ? "dayWeek-selected" : ''} `}>
                         {obj.day}
                       </div>
                     ))}
-
+                    {endIndex < menus.length && (
+                      <div onClick={handleNextWeek} style={{ width: '40px', height: '40px', borderRadius: '100%' }} className=" bg-orange d-flex justify-content-center align-items-center cursor-pointer ">
+                        <FiChevronRight style={{ fontSize: '25px' }} className="text-white" />
+                      </div>
+                    )}
                   </div>
                   <div style={{ maxWidth: '700px', width: '100%' }} className=" my-5 text text-black mx-auto">
                     {menus[dataIndex].data?.map((foodInfo, index) => (
