@@ -261,7 +261,6 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
           <>
             <div className=" w-100 d-flex flex-col gap-2 border  p-2 border-circular">
               <div className="d-flex justify-content-end mt-2 mb-4 w-100">
-                <Button className="mx-2 dayWeek-selected" onClick={collapseHandler} >{buttonText ? "Collapse" : "Uncollapse"}</Button>
                 <input
                   onKeyDown={handleKeyDown}
                   value={searchText}
@@ -271,6 +270,9 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                   type="text"
                 />
                 
+              </div>
+              <div className="d-flex justify-content-center mt-2 mb-4 w-100">
+                <Button className="mx-2 dayWeek-selected" onClick={collapseHandler} >{buttonText ? "Collapse" : "Uncollapse"}</Button>
               </div>
               <div style={{ gap: '20px' }} className="w-100 d-flex justify-content-center align-items-center flex-row">
                 <div onClick={() => {
