@@ -271,9 +271,7 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                 />
                 
               </div>
-              <div className="d-flex justify-content-center mt-2 mb-4 w-100">
-                <Button className="mx-2 dayWeek-selected" onClick={collapseHandler} >{buttonText ? "Collapse" : "Uncollapse"}</Button>
-              </div>
+
               <div style={{ gap: '20px' }} className="w-100 d-flex justify-content-center align-items-center flex-row">
                 <div onClick={() => {
                   setDuration('day')
@@ -291,6 +289,9 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
                 }} className={` p-2 text-center  ${duration === 'week' ? "dayWeek-selected" : ''} dayWeek-option border-circular`}>
                   WEEK
                 </div>
+              </div>
+              <div className="d-flex justify-content-center mt-2 mb-4 w-100">
+                <Button className="mx-2 dayWeek-selected" onClick={collapseHandler} >{buttonText ? "Collapse" : "Uncollapse"}</Button>
               </div>
               {searching && (
                 <>
