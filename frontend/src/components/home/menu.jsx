@@ -183,12 +183,14 @@ export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsH
 
   const applySearch = () => {
     if (searchText?.length > 0) {
+      console.log("Chala")
       setSearching(true);
       setDuration('');
       const searchingData = [];
       
-      menus?.forEach(mainobj => {
-        mainobj.data.forEach(mealObj => {
+      menus?.slice(menus.length - 7, menus.length).forEach(mainobj => {
+      console.log("Chala 2")
+      mainobj.data.forEach(mealObj => {
           mealObj.foods.forEach(item => {
             if (item.toLowerCase().includes(searchText?.toLowerCase())) {
               searchingData.push({
