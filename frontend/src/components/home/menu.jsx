@@ -13,7 +13,7 @@ import MenuModal from "../global/menuModal";
 import { setCurrentTab } from '../../store/sidebarTabsSlice'
 import { useNavigate } from "react-router-dom";
 
-const dayToFetch = 0 // 0 is Sunday 6 is Saturday
+const dayToFetch = 1 // 0 is Sunday 6 is Saturday
 
 export default function Menu({ handleRating, ratings, getUserFavoriteAndRatingsHandler, adminLogin }) {
 

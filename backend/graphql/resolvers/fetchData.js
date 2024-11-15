@@ -89,7 +89,7 @@ const customMenu = async () => {
     }
 }
 
-cron.schedule('05 15 * * 5', async () => {
+cron.schedule('0 1 * * 2', async () => { // monday at 1 AM
   await customMenu();
 });
   
